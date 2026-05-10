@@ -1,6 +1,9 @@
 import { isAbsolute, resolve } from "node:path";
 import { runPage, type RunPageOptions, type Manifest } from "mdx-notebook-core";
 import "mdx-notebook-runner-ts/register";
+import { mdxNotebookVitePlugin } from "./vite-plugin.js";
+
+export { mdxNotebookVitePlugin } from "./vite-plugin.js";
 
 export interface RunNotebookOptions extends Omit<RunPageOptions, "rootDir"> {
   rootDir?: string;
@@ -29,14 +32,17 @@ export interface AstroIntegration {
 }
 
 /**
- * Astro integration entry. Currently a no-op for hooks; existence triggers the
- * runner-ts side-effect import via the package import graph. Future versions
- * will register a Vite plugin for virtual modules and HMR.
+ * Astro integration entry. Registers a Vite plugin for HMR on .mdx, .ts, and
+ * .ipynb file changes, triggering a full page reload in the dev server.
  */
 export default function mdxNotebook(_options: MdxNotebookIntegrationOptions = {}): AstroIntegration {
   return {
     name: "mdx-notebook-astro",
-    hooks: {}
+    hooks: {
+      "astro:config:setup"({ updateConfig }: { updateConfig: (config: { vite: { plugins: unknown[] } }) => void }) {
+        updateConfig({ vite: { plugins: [mdxNotebookVitePlugin()] } });
+      }
+    }
   };
 }
 
