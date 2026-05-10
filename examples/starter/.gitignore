@@ -3,3 +3,4 @@ dist
 .astro
 .mdx-notebook
 .vercel
+.env*.local

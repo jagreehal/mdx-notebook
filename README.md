@@ -99,6 +99,14 @@ Render saved outputs from an `.ipynb` notebook:
 
 Cells `0` through `3` are extracted; their saved outputs (text, images, rich media) are rendered via `IpynbOutputs`.
 
+### 4. Checkpoint-driven tutorials
+
+Use `:::check{...}` directives to validate cell output and produce learner progress in the manifest (`tutorial`, `checkpoints`, `progress`). Then render that state with `TutorialStatus` in `mdx-notebook-react`.
+
+See:
+- [`mdx-notebook-core` checkpoint docs](./packages/mdx-notebook-core/README.md#tutorial-checkpoints-check)
+- [`mdx-notebook-react` tutorial status docs](./packages/mdx-notebook-react/README.md#tutorial-status-ui)
+
 ### Binding outputs to components
 
 After a cell runs, bind its output to any React component using the same `id`:

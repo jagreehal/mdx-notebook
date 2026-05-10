@@ -1,0 +1,86 @@
+# Build an AI agent with tool use using Vercel AI SDK and Gemini
+
+The Vercel AI SDK gives you a clean abstraction for building AI agents that call tools to answer questions. This tutorial walks through building one from zero with Google's Gemini 2.5 Flash, capturing every tool call at build time so the documentation you ship matches what the code actually does.
+
+If your AI SDK calls have ever silently changed behavior between commits, this approach catches it: the tool-call sequence is part of the build output, and a diff in your rendered page shows up the moment the LLM's behavior shifts.
+
+## What you'll build
+
+A travel-assistant agent. Ask it "should I pack a jacket for Tokyo?" and it calls a `getWeather` tool with the right city, reads the response, and writes a useful reply. By the end you'll have two tools, a `<MessageThread>` showing the conversation, and a `<ToolCallTimeline>` showing every invocation with its input, output, and latency.
+
+## Prerequisites
+
+- Node 20 or higher
+- A Google AI API key from [aistudio.google.com/apikey](https://aistudio.google.com/apikey) (Gemini 2.5 Flash has a generous free tier)
+- Basic TypeScript
+
+## Step 1 — Define your first tool
+
+Tools in the AI SDK are just `tool({ description, parameters, execute })` objects. The `description` is what the LLM reads to decide *when* to call your tool. Treat it as the spec the model will use to choose:
+
+:::run{src="../../scripts/agent-step1.ts" id="step1"}
+:::
+
+Above, we define `getWeather` with a Zod schema for its parameters. The `execute` function is what runs when the LLM decides to call the tool — it doesn't see your TypeScript implementation, only the description and the parameter schema. Be specific in the description; vague tools confuse the model.
+
+## Step 2 — Wire it into `generateText`
+
+The AI SDK's `generateText` takes a `tools` map and a `maxSteps` cap. When the model calls a tool, the SDK runs it, feeds the result back into the next step, and continues until the model produces text without calling another tool or hits `maxSteps`.
+
+```ts
+import { generateText, tool } from "ai";
+import { createGoogleGenerativeAI } from "@ai-sdk/google";
+
+const google = createGoogleGenerativeAI({ apiKey: process.env.GOOGLE_API_KEY });
+
+const result = await generateText({
+  model: google("gemini-2.5-flash"),
+  tools: { getWeather },
+  maxSteps: 5,
+  messages: [{ role: "user", content: "What's the weather in Tokyo?" }]
+});
+```
+
+`maxSteps` is your safety cap — without it, a buggy agent that keeps calling tools could spin forever. Five is a reasonable default for most use cases.
+
+## Step 3 — Run it for real
+
+This cell calls Gemini for real (mocked output when `GOOGLE_API_KEY` is unset). The captured `messages` and `toolCalls` flow directly into `<MessageThread>` and `<ToolCallTimeline>`:
+
+:::run{src="../../scripts/agent-step3-prompt-a.ts" id="step3a"}
+:::
+
+You're looking at exactly what the model produced when this page was built. If the API behavior changes, the next build will show the new output and the diff in the rendered page is your test.
+
+## Step 4 — Iterate the prompt
+
+Same code, different prompt. Watch what changes in the captured tool calls:
+
+:::run{src="../../scripts/agent-step3-prompt-b.ts" id="step3b"}
+:::
+
+When you ask about *both* Tokyo and London, the model now makes **two** `getWeather` calls. You didn't change the agent code — the tool description told the model "this gets weather for a city," so calling it twice with different cities was the natural choice. This is the LLM doing planning for you. Compare to step 3 above with `<DiffRuns>` — the structural difference is just one more tool invocation.
+
+## Step 5 — Add a second tool
+
+The interesting behavior emerges when the model picks between tools. We add `getForecast` for multi-day queries and keep `getWeather` for "right now":
+
+:::run{src="../../scripts/agent-step5-two-tools.ts" id="step5"}
+:::
+
+Note the prompt: "5-day trip starting Monday." The model reads both tool descriptions and picks `getForecast` (multi-day) over `getWeather` (current). If you'd asked "what's it doing right now?" it would pick the other one. The descriptions are doing the work.
+
+This is the whole agent loop: tool descriptions guide selection, parameter schemas guide invocation, and the SDK loops until the model produces a final answer.
+
+## What you got
+
+A working AI agent with two tools, every invocation captured at build time, and a rendered visualization that updates automatically when the model's behavior changes. You can ship this as documentation that genuinely reflects what runs.
+
+Where to go next:
+
+- Add a third tool — see how Gemini handles ambiguous queries.
+- Replace mocked tools with real APIs (e.g., a weather provider, a database query). The pattern is identical.
+- Stream the response with the AI SDK's `streamText` and capture it via the [streaming tutorial](/tutorials/03-streaming).
+- Use the [run matrix](/tutorials/05-crash-resume) to try the same prompt across model temperatures or against different providers.
+
+The Vercel AI SDK docs at [sdk.vercel.ai/docs](https://sdk.vercel.ai/docs) cover everything else (streaming, structured output, embeddings). What this tutorial gave you was the *captured render* discipline — your docs and your agent stay in sync because they're literally the same artifact.

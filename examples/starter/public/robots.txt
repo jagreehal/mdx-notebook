@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://mdx-notebook-demo.vercel.app/sitemap.txt

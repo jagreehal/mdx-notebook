@@ -25,6 +25,24 @@ import { NotebookPage, Stdout, ResultJSON, JsonEditor, AgentTrace } from "mdx-no
 </NotebookPage>
 ```
 
+### Tutorial status UI
+
+`TutorialStatus` renders tutorial metadata and check/progress state from the build manifest (`tutorial`, `checkpoints`, `progress`), so learners get immediate completion and prerequisite feedback.
+
+```tsx
+import { NotebookPage, TutorialStatus, NotebookCell } from "mdx-notebook-react";
+
+<NotebookPage manifest={manifest}>
+  <TutorialStatus manifest={manifest} />
+  <NotebookCell cellId="sum" />
+</NotebookPage>
+```
+
+Field mapping:
+- `manifest.tutorial`: lesson metadata (`title`, `difficulty`, `estimatedMinutes`, `prerequisites`).
+- `manifest.checkpoints`: pass/fail list per check (`title`/`id`, `message` for failures).
+- `manifest.progress`: completion percent, required passed/total, and missing prerequisites.
+
 ## Components
 
 | Component | Description |
@@ -40,6 +58,7 @@ import { NotebookPage, Stdout, ResultJSON, JsonEditor, AgentTrace } from "mdx-no
 | `CodeBlock` | Syntax-highlighted code block with copy button. |
 | `Math` | Inline and block math via KaTeX. |
 | `NotebookCell` | Convenience wrapper: code block + all output components for one cell. |
+| `TutorialStatus` | Tutorial metadata + checkpoint/progress/prerequisite summary from manifest fields. |
 
 ## Links
 
