@@ -1,4 +1,5 @@
 import { isAbsolute, resolve } from "node:path";
+import { spawn } from "node:child_process";
 import { runPage, type RunPageOptions, type Manifest } from "mdx-notebook-core";
 import "mdx-notebook-runner-ts/register";
 import { mdxNotebookVitePlugin } from "./vite-plugin.js";
@@ -23,6 +24,23 @@ export interface MdxNotebookIntegrationOptions {
   callouts?: boolean;
   /** Register astro-expressive-code with collapsible-sections + line-numbers. Default: false. */
   codeHighlight?: boolean | CodeHighlightOptions;
+  /**
+   * Shell commands to run BEFORE the Astro build (astro:build:start). Commands run sequentially.
+   * Any non-zero exit aborts the build with a clear error message.
+   * Each command runs via `bash -lc`, so shell syntax works.
+   */
+  before?: string[];
+  /**
+   * Shell commands to run AFTER the Astro build (astro:build:done), regardless of build success.
+   * Useful for `docker compose down`. Non-zero exit logs a warning but does NOT change the build result.
+   */
+  after?: string[];
+  /**
+   * Names of environment variables your tutorials depend on. They're surfaced into the browser
+   * as `window.MDX_NB_ENV_STATUS = { VAR: true/false }` so `<EnvBadge>` can show set/unset state.
+   * The VALUES are never exposed — only the boolean presence flag.
+   */
+  env?: string[];
 }
 
 export interface CodeHighlightOptions {
@@ -35,6 +53,17 @@ export interface AstroIntegration {
   hooks: Record<string, unknown>;
 }
 
+async function runHookCommand(cmd: string, phase: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const child = spawn("bash", ["-lc", cmd], { stdio: "inherit" });
+    child.once("close", (code) => {
+      if (code === 0) resolve();
+      else reject(new Error(`mdx-notebook-astro ${phase}-hook "${cmd}" exited with code ${code}`));
+    });
+    child.once("error", reject);
+  });
+}
+
 /**
  * Astro integration entry. Registers a Vite plugin for HMR on .mdx, .ts, and
  * .ipynb file changes, triggering a full page reload in the dev server.
@@ -42,6 +71,9 @@ export interface AstroIntegration {
  * Optional features:
  *   callouts: true       - enables :::tip / :::info / :::warn / :::danger / :::success
  *   codeHighlight: true  - registers astro-expressive-code (shiki) with collapsible sections + line numbers
+ *   before: [...]        - shell commands to run before the Astro build
+ *   after: [...]         - shell commands to run after the Astro build (teardown)
+ *   env: [...]           - env var names surfaced as window.MDX_NB_ENV_STATUS booleans
  */
 export default function mdxNotebook(options: MdxNotebookIntegrationOptions = {}): AstroIntegration {
   return {
@@ -89,9 +121,63 @@ export default function mdxNotebook(options: MdxNotebookIntegrationOptions = {})
             );
           }
         }
+
+        if (options.env && options.env.length > 0) {
+          const status: Record<string, boolean> = {};
+          for (const name of options.env) {
+            status[name] = process.env[name] !== undefined && process.env[name] !== "";
+          }
+          ctx.updateConfig({
+            vite: {
+              plugins: [{
+                name: "mdx-notebook-env-status",
+                resolveId(id: string) { return id === "virtual:mdx-notebook/env-status" ? id : null; },
+                load(id: string) {
+                  if (id === "virtual:mdx-notebook/env-status") {
+                    return `export const envStatus = ${JSON.stringify(status)};\nif (typeof window !== "undefined") window.MDX_NB_ENV_STATUS = envStatus;`;
+                  }
+                  return null;
+                }
+              }]
+            }
+          });
+        }
+      },
+
+      async "astro:build:start"() {
+        if (!options.before || options.before.length === 0) return;
+        for (const cmd of options.before) {
+          await runHookCommand(cmd, "before");
+        }
+      },
+
+      async "astro:build:done"() {
+        if (!options.after || options.after.length === 0) return;
+        for (const cmd of options.after) {
+          try {
+            await runHookCommand(cmd, "after");
+          } catch (err) {
+            // After-hooks don't fail the build; log a warning instead.
+            console.warn(`[mdx-notebook-astro] after-hook "${cmd}" failed:`, (err as Error).message);
+          }
+        }
       }
     }
   };
+}
+
+/**
+ * Returns the env-status map injected by the `env` integration option at build time.
+ * Only works inside .astro frontmatter when the mdx-notebook-astro integration is active.
+ * Returns undefined when the virtual module is not available (e.g. outside an Astro build).
+ */
+export async function getEnvStatus(): Promise<Record<string, boolean> | undefined> {
+  try {
+    const mod = await import("virtual:mdx-notebook/env-status" as string);
+    return (mod as { envStatus?: Record<string, boolean> }).envStatus;
+  } catch {
+    return undefined;
+  }
 }
 
 export { mdxNotebookVitePlugin } from "./vite-plugin.js";
