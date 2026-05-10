@@ -1,5 +1,5 @@
 import { Readable } from "node:stream";
-import type { LogEvent } from "@mdx-notebook/core";
+import type { LogEvent } from "mdx-notebook-core";
 
 export const MAX_BYTES_PER_STREAM = 1024 * 1024; // 1 MiB
 

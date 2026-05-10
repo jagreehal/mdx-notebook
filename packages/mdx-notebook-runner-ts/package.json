@@ -1,5 +1,5 @@
 {
-  "name": "@mdx-notebook/runner-ts",
+  "name": "mdx-notebook-runner-ts",
   "version": "0.0.0",
   "type": "module",
   "main": "./dist/index.js",
@@ -26,7 +26,7 @@
     "clean": "rm -rf dist .turbo coverage"
   },
   "dependencies": {
-    "@mdx-notebook/core": "workspace:*",
+    "mdx-notebook-core": "workspace:*",
     "tsx": "^4.19.0",
     "dotenv": "^16.4.0"
   },

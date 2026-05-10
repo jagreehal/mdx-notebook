@@ -24,7 +24,7 @@ importers:
         specifier: ^3.0.0
         version: 3.2.4(@types/debug@4.1.13)(@types/node@20.19.40)(jiti@2.7.0)(jsdom@26.1.0)(tsx@4.21.0)
 
-  packages/core:
+  packages/mdx-notebook-core:
     dependencies:
       mdast-util-to-string:
         specifier: ^4.0.0
@@ -45,9 +45,6 @@ importers:
         specifier: ^5.0.0
         version: 5.1.0
     devDependencies:
-      '@mdx-notebook/runner-ts':
-        specifier: workspace:*
-        version: link:../runner-ts
       '@testing-library/react':
         specifier: ^16.0.0
         version: 16.3.2(@testing-library/dom@10.4.1)(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
@@ -66,18 +63,21 @@ importers:
       jsdom:
         specifier: ^26.0.0
         version: 26.1.0
+      mdx-notebook-runner-ts:
+        specifier: workspace:*
+        version: link:../mdx-notebook-runner-ts
       react:
         specifier: ^19.0.0
         version: 19.2.6
 
-  packages/runner-ts:
+  packages/mdx-notebook-runner-ts:
     dependencies:
-      '@mdx-notebook/core':
-        specifier: workspace:*
-        version: link:../core
       dotenv:
         specifier: ^16.4.0
         version: 16.6.1
+      mdx-notebook-core:
+        specifier: workspace:*
+        version: link:../mdx-notebook-core
       tsx:
         specifier: ^4.19.0
         version: 4.21.0

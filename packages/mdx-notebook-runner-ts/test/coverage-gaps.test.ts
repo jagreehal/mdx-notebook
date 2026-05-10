@@ -2,8 +2,8 @@
 // Targeted tests to lift runner-ts coverage to thresholds.
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { resolve, join } from "node:path";
-import { clearRegistry } from "@mdx-notebook/core";
-import type { Cell, RunCtx } from "@mdx-notebook/core";
+import { clearRegistry } from "mdx-notebook-core";
+import type { Cell, RunCtx } from "mdx-notebook-core";
 
 const FIX = resolve(__dirname, "fixtures");
 
@@ -37,7 +37,7 @@ describe("register.ts", () => {
   });
 
   it("registers runnerTs as a side-effect", async () => {
-    const { getRunner } = await import("@mdx-notebook/core");
+    const { getRunner } = await import("mdx-notebook-core");
     // register.ts calls registerRunner(runnerTs) on import
     await import("../src/register.js");
     const runner = getRunner("ts");

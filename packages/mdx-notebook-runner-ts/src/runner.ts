@@ -2,7 +2,7 @@ import { mkdtemp, writeFile, readFile, unlink, rm, mkdir } from "node:fs/promise
 import { tmpdir } from "node:os";
 import { dirname, isAbsolute, join, resolve } from "node:path";
 import { createHash } from "node:crypto";
-import type { Cell, CellOutput, RunCtx, Runner } from "@mdx-notebook/core";
+import type { Cell, CellOutput, RunCtx, Runner } from "mdx-notebook-core";
 import { spawnTsx } from "./spawn.js";
 import { mergeEnv } from "./env.js";
 

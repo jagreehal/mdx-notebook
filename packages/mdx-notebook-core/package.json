@@ -1,5 +1,5 @@
 {
-  "name": "@mdx-notebook/core",
+  "name": "mdx-notebook-core",
   "version": "0.0.0",
   "type": "module",
   "main": "./dist/index.js",
@@ -43,7 +43,7 @@
     "react": { "optional": true }
   },
   "devDependencies": {
-    "@mdx-notebook/runner-ts": "workspace:*",
+    "mdx-notebook-runner-ts": "workspace:*",
     "@types/node": "^20.0.0",
     "@types/react": "^19.0.0",
     "@types/mdast": "^4.0.0",

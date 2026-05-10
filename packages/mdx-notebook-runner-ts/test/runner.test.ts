@@ -2,7 +2,7 @@
 import { describe, it, expect } from "vitest";
 import { resolve } from "node:path";
 import { runnerTs } from "../src/runner.js";
-import type { Cell, RunCtx } from "@mdx-notebook/core";
+import type { Cell, RunCtx } from "mdx-notebook-core";
 
 const FIX = resolve(__dirname, "fixtures");
 

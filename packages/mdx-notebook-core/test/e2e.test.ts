@@ -3,7 +3,7 @@ import { mkdtemp } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { runPage, clearRegistry, registerRunner } from "../src/index.js";
-import { runnerTs } from "@mdx-notebook/runner-ts";
+import { runnerTs } from "mdx-notebook-runner-ts";
 
 const PAGE = join(__dirname, "fixtures", "e2e", "page.mdx");
 

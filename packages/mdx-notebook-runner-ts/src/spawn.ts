@@ -1,6 +1,6 @@
 import { spawn } from "node:child_process";
 import type { ChildProcess } from "node:child_process";
-import type { LogEvent } from "@mdx-notebook/core";
+import type { LogEvent } from "mdx-notebook-core";
 import { collectLines } from "./capture.js";
 import { locateHarness } from "./harness/locate.js";
 
