@@ -32,3 +32,4 @@ export { Exercise, type ExerciseProps } from "./exercise.js";
 export { TodoChecklist, type TodoChecklistProps } from "./todo-checklist.js";
 export { LessonProgress, type LessonProgressProps, type Lesson } from "./lesson-progress.js";
 export { Breakpoint, type BreakpointProps } from "./breakpoint.js";
+export { TutorialStatus, type TutorialStatusProps } from "./tutorial-status.js";

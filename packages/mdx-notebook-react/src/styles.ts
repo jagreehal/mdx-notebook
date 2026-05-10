@@ -106,6 +106,22 @@ const CSS = `
 .mdx-nb-progress-icon { color: var(--fg-muted, #666); width: 1em; }
 .mdx-nb-breakpoint { display: flex; gap: 0.5rem; padding: 0.5rem 0.75rem; background: var(--bg-soft, #fafbfc); border-left: 3px solid var(--accent, #1f6feb); margin: 0.3rem 0; font-size: 0.9em; }
 .mdx-nb-breakpoint-line { font-family: var(--font-mono, monospace); font-weight: 600; color: var(--accent, #1f6feb); }
+.mdx-nb-tutorial-status { border: 1px solid var(--border, #e1e4e8); border-radius: 8px; padding: 0.8rem; background: var(--bg, #fff); margin: 0.75rem 0; }
+.mdx-nb-tutorial-status-title { margin: 0 0 0.5rem; font-size: 0.95rem; }
+.mdx-nb-tutorial-meta { margin: 0; display: grid; gap: 0.3rem; }
+.mdx-nb-tutorial-meta div { display: grid; grid-template-columns: 120px 1fr; gap: 0.5rem; }
+.mdx-nb-tutorial-meta dt { color: var(--fg-muted, #666); }
+.mdx-nb-tutorial-meta dd { margin: 0; }
+.mdx-nb-checkpoints h4, .mdx-nb-progress-summary h4 { margin: 0.75rem 0 0.4rem; font-size: 0.9rem; }
+.mdx-nb-checkpoints ul { margin: 0; padding: 0; list-style: none; }
+.mdx-nb-checkpoints li { display: grid; grid-template-columns: 1rem 1fr; gap: 0.5rem; align-items: start; padding: 0.2rem 0; }
+.mdx-nb-checkpoint-ok { color: #1a7f37; }
+.mdx-nb-checkpoint-fail { color: #b42318; }
+.mdx-nb-checkpoint-icon { width: 1rem; text-align: center; }
+.mdx-nb-checkpoints small { grid-column: 2; color: var(--fg-muted, #666); }
+.mdx-nb-progress-summary p { margin: 0.25rem 0; }
+.mdx-nb-progress-blocked { color: #b42318; }
+.mdx-nb-progress-ready { color: #1a7f37; }
 `;
 
 export function injectStyles(): void {

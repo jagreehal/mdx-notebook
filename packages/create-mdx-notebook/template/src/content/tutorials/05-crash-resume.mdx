@@ -1,0 +1,14 @@
+# Crash and resume — run matrix
+
+When a script crashes mid-flight, what happens on restart? Naive code re-runs every step.
+Code with a journal skips work already done. This tutorial captures **three runs of the same script** in one cell — happy path, crash mid-flight, and resume — and lets you compare them side-by-side.
+
+:::run{src="../../scripts/crash-resume.ts" id="run" matrix="happy:RESET=1,crash:CRASH_AFTER=2,resume:RESUMING=1"}
+:::
+
+Three runs of `crash-resume.ts`:
+- **happy** — fresh state, all four steps complete.
+- **crash** — `CRASH_AFTER=2` exits after step 2. Steps 3 and 4 never run.
+- **resume** — `RESUMING=1` reads the crash journal and skips the steps already done.
+
+Inspect each variant with the tabbed `<RunMatrix>` below, then jump to `<DiffRuns>` to see the exact line-level difference between the crash and the resume runs.

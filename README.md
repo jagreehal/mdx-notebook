@@ -4,7 +4,9 @@
 
 Write MDX. Code in your tutorials runs at build time. Outputs are typed, cached, and bound to React components by id. Viewers can edit JSON in the browser and components re-render. Comes with an Astro integration and a `npm create mdx-notebook` scaffolder.
 
-→ **Live demo: <https://mdx-notebook-demo.vercel.app>**
+→ **Live demo: <https://mdx-notebook-demo.vercel.app>** · **GitHub: <https://github.com/jagreehal/mdx-notebook>**
+
+![JsonEditor live mutation — viewer edits captured JSON; the bound component re-renders in the browser. Cells are immutable; data is mutable.](./docs/demo.gif)
 
 ---
 

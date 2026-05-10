@@ -30,6 +30,44 @@ export default { greeting: "Hello" };
 :::
 ````
 
+### Tutorial checkpoints (`:::check`)
+
+Use `:::check` directives to assert expected outcomes against a cell's output. Results are written to `manifest.checkpoints`, and aggregate progress is written to `manifest.progress`.
+
+```mdx
+```ts run id=sum
+const nums = [1, 2, 3, 4];
+console.log("sum", nums.reduce((a, b) => a + b, 0));
+export default nums.reduce((a, b) => a + b, 0);
+```
+
+:::check{id="sum-result" cell="sum" equals=10 path="result" title="Result is 10" required=true weight=2}
+:::
+
+:::check{id="sum-stdout" cell="sum" includes="sum 10" path="stdout"}
+:::
+```
+
+Supported operators:
+- `equals`
+- `includes`
+- `regex`
+- `exists`
+- `gt`
+- `gte`
+- `lt`
+- `lte`
+
+Key fields:
+- `id`: unique checkpoint id.
+- `cell`: target cell id.
+- `path`: where to read from (`result`, `stdout`, `stderr`, `status`, `exitCode`, `durationMs`, or nested dot-path).
+- `required`: whether failing blocks completion (`true` by default).
+- `weight`: weighted score contribution (`1` default).
+- `title`, `hint`: optional learner-facing strings.
+
+Frontmatter tutorial metadata is also parsed into `manifest.tutorial` (for example `lessonId`, `title`, `difficulty`, `estimatedMinutes`, `prerequisites`).
+
 ### React hooks
 
 ```ts

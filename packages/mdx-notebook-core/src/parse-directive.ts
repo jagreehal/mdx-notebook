@@ -19,6 +19,18 @@ export interface IpynbAttrs {
   cells: number[] | null;
 }
 
+export interface CheckpointAttrs {
+  id: string;
+  cell: string;
+  path: string | undefined;
+  op: "equals" | "includes" | "regex" | "exists" | "gt" | "gte" | "lt" | "lte";
+  expected: unknown;
+  required: boolean;
+  weight: number;
+  title: string | undefined;
+  hint: string | undefined;
+}
+
 export function parseRunDirectiveAttrs(
   raw: Record<string, string | undefined>,
   loc: Loc
@@ -42,6 +54,48 @@ export function parseIpynbDirectiveAttrs(
   const id = required(raw.id, "MISSING_ID", "MISSING_ID: directive `:::ipynb` missing required `id`", loc);
   const src = required(raw.src, "MISSING_SRC", "MISSING_SRC: directive `:::ipynb` missing required `src`", loc);
   return { id, src, cells: parseCellsSelector(raw.cells) };
+}
+
+export function parseCheckDirectiveAttrs(
+  raw: Record<string, string | undefined>,
+  loc: Loc
+): CheckpointAttrs {
+  const id = required(raw.id, "MISSING_ID", "MISSING_ID: directive `:::check` missing required `id`", loc);
+  const cell = required(raw.cell, "MISSING_ID", "MISSING_ID: directive `:::check` missing required `cell`", loc);
+  const path = raw.path;
+  const requiredFlag = parseBool(raw.required);
+  const isRequired = requiredFlag ?? true;
+  const weight = raw.weight !== undefined ? parsePositiveNumber(raw.weight, "BAD_CHECKPOINT", "BAD_CHECKPOINT: weight must be > 0", loc) : 1;
+
+  const ops: Array<CheckpointAttrs["op"]> = ["equals", "includes", "regex", "exists", "gt", "gte", "lt", "lte"];
+  const active = ops.filter((op) => raw[op] !== undefined);
+  if (active.length === 0) {
+    throw new BuildError({
+      code: "BAD_CHECKPOINT",
+      message: "BAD_CHECKPOINT: directive `:::check` requires one of equals/includes/regex/exists/gt/gte/lt/lte",
+      loc
+    });
+  }
+  if (active.length > 1) {
+    throw new BuildError({
+      code: "BAD_CHECKPOINT",
+      message: `BAD_CHECKPOINT: directive \`:::check\` has multiple operators (${active.join(", ")})`,
+      loc
+    });
+  }
+  const op = active[0]!;
+  const expected = op === "exists" ? parseExists(raw.exists) : parseLiteral(raw[op]);
+  return {
+    id,
+    cell,
+    path,
+    op,
+    expected,
+    required: isRequired,
+    weight,
+    title: raw.title,
+    hint: raw.hint
+  };
 }
 
 export function inferLang(src: string): string {
@@ -77,4 +131,38 @@ function parseBool(value: string | undefined): boolean | undefined {
   if (value === "true") return true;
   if (value === "false") return false;
   return undefined;
+}
+
+function parseExists(value: string | undefined): boolean {
+  if (value === undefined || value === "") return true;
+  const parsed = parseBool(value);
+  return parsed ?? true;
+}
+
+function parseLiteral(value: string | undefined): unknown {
+  if (value === undefined) return undefined;
+  const t = value.trim();
+  if (t === "true") return true;
+  if (t === "false") return false;
+  if (t === "null") return null;
+  if (t !== "" && !Number.isNaN(Number(t))) return Number(t);
+  if ((t.startsWith("{") && t.endsWith("}")) || (t.startsWith("[") && t.endsWith("]"))) {
+    try {
+      return JSON.parse(t);
+    } catch {
+      return t;
+    }
+  }
+  if ((t.startsWith("\"") && t.endsWith("\"")) || (t.startsWith("'") && t.endsWith("'"))) {
+    return t.slice(1, -1);
+  }
+  return t;
+}
+
+function parsePositiveNumber(value: string, code: string, message: string, loc: Loc): number {
+  const n = Number(value);
+  if (!Number.isFinite(n) || n <= 0) {
+    throw new BuildError({ code, message, loc });
+  }
+  return n;
 }

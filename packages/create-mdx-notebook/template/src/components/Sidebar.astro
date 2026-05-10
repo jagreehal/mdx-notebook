@@ -1,31 +1,48 @@
 ---
-const tutorials = [
-  { slug: "01-getting-started", title: "1. Getting started" },
-  { slug: "02-agents",          title: "2. AI agents with tool use" },
-  { slug: "03-streaming",       title: "3. Streaming token output" },
-  { slug: "04-comparing-models", title: "4. Comparing models" }
-];
-const reference = [
-  { href: "/components", title: "Components" }
-];
+import { getLessonsByGroup } from "../tutorials.config.ts";
+const grouped = getLessonsByGroup();
 const current = Astro.url.pathname;
 
 function navStyle(active: boolean) {
   return `display: block; padding: 0.4rem 0.6rem; border-radius: 6px; color: ${active ? "var(--accent)" : "var(--fg)"}; text-decoration: none; font-weight: ${active ? "600" : "400"}; background: ${active ? "var(--accent-soft)" : "transparent"};`;
 }
+
+const reference = [
+  { href: "/components", title: "Components" }
+];
 ---
 <nav>
-  <h3 style="margin: 0 0 0.5rem; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--fg-muted);">Tutorials</h3>
-  <ul style="list-style: none; padding: 0; margin: 0 0 1.5rem;">
-    <li><a href="/" style={navStyle(current === "/")}>Welcome</a></li>
-    {tutorials.map((t) => (
-      <li><a href={`/tutorials/${t.slug}`} style={navStyle(current.includes(t.slug))}>{t.title}</a></li>
-    ))}
-  </ul>
-  <h3 style="margin: 0 0 0.5rem; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--fg-muted);">Reference</h3>
-  <ul style="list-style: none; padding: 0; margin: 0;">
-    {reference.map((r) => (
-      <li><a href={r.href} style={navStyle(current.startsWith(r.href))}>{r.title}</a></li>
-    ))}
-  </ul>
+  {grouped.map((g) => (
+    <div style="margin-bottom: 1.25rem;">
+      <h3 style="margin: 0 0 0.5rem; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--fg-muted);">
+        {g.group.name}
+      </h3>
+      <ul style="list-style: none; padding: 0; margin: 0;">
+        {g.group.name === grouped[0].group.name && (
+          <li><a href="/" style={navStyle(current === "/")}>Welcome</a></li>
+        )}
+        {g.lessons.map((l, i) => {
+          const num = i + 1;
+          const active = current.includes(l.slug);
+          return (
+            <li>
+              <a href={`/tutorials/${l.slug}`} style={navStyle(active)}>
+                <span style="color: var(--fg-muted); font-size: 0.85em; margin-right: 0.3rem;">{num}.</span>
+                {l.title}
+                {l.durationMin && <span style="margin-left: 0.4rem; color: var(--fg-muted); font-size: 0.78em;">· {l.durationMin}m</span>}
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  ))}
+  <div style="margin-bottom: 1rem;">
+    <h3 style="margin: 0 0 0.5rem; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--fg-muted);">Reference</h3>
+    <ul style="list-style: none; padding: 0; margin: 0;">
+      {reference.map((r) => (
+        <li><a href={r.href} style={navStyle(current.startsWith(r.href))}>{r.title}</a></li>
+      ))}
+    </ul>
+  </div>
 </nav>

@@ -1,0 +1,27 @@
+---
+lessonId: lesson-02
+title: "Dependency-Aware Cells"
+order: 2
+estimatedMinutes: 15
+difficulty: intermediate
+prerequisites:
+  - lesson-01
+outcomes:
+  - Use dependsOn to sequence cells
+troubleshooting:
+  - If a check fails, inspect stdout and result blocks
+---
+
+```ts run id=numbers
+export default [1, 2, 3, 4]
+```
+
+```ts run id=sum dependsOn=numbers
+export default 10
+```
+
+:::check{id="sum-equals-10" cell="sum" path="result" equals="10" required="true" weight="2" title="Compute the total"}
+:::
+
+:::check{id="sum-stdout" cell="sum" path="stdout" includes="ran sum" required="false" weight="1"}
+:::

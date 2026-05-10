@@ -9,4 +9,9 @@ export { computePageId } from "./page-id.js";
 export { buildManifest, writeManifest, manifestPath } from "./manifest.js";
 export { computeCacheKey, readCache, writeCache, type CacheKeyInputs } from "./cache.js";
 export { dispatchCell, type DispatchCtx } from "./dispatcher.js";
+export {
+  parseTutorialMetaFromSource,
+  evaluateCheckpoints,
+  computeProgress
+} from "./curriculum.js";
 export { OutputProvider, useCellOutput, useOutputStore, OutputContext } from "./runtime/react.js";

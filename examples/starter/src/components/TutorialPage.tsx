@@ -1,4 +1,4 @@
-import { NotebookPage, NotebookCell, IpynbOutputs, AgentTrace } from "mdx-notebook-react";
+import { NotebookPage, NotebookCell, IpynbOutputs, AgentTrace, TutorialStatus } from "mdx-notebook-react";
 import type { Manifest } from "mdx-notebook-core";
 
 export interface TutorialPageProps {
@@ -10,6 +10,7 @@ export interface TutorialPageProps {
 export default function TutorialPage({ manifest, cells }: TutorialPageProps) {
   return (
     <NotebookPage manifest={manifest}>
+      <TutorialStatus manifest={manifest} />
       {cells.map((id) => {
         const cell = manifest.cells[id];
         if (!cell) return <div key={id} className="mdx-nb-error">No cell with id "{id}"</div>;

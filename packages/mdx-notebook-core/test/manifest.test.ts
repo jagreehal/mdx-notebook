@@ -20,6 +20,35 @@ describe("buildManifest", () => {
     expect(m.pageId).toBe("page1");
     expect(typeof m.builtAt).toBe("number");
   });
+
+  it("includes optional tutorial/checkpoint/progress fields", () => {
+    const m = buildManifest("page1", [co("x")], {
+      tutorial: { lessonId: "l1", title: "Intro" },
+      checkpoints: [{
+        id: "c1",
+        cellId: "x",
+        passed: true,
+        required: true,
+        weight: 1,
+        op: "equals",
+        path: "result"
+      }],
+      progress: {
+        requiredTotal: 1,
+        requiredPassed: 1,
+        optionalTotal: 0,
+        optionalPassed: 0,
+        weightedScore: 1,
+        weightedMax: 1,
+        percent: 100,
+        completed: true,
+        prerequisites: { required: [], missing: [], satisfied: true }
+      }
+    });
+    expect(m.tutorial?.lessonId).toBe("l1");
+    expect(m.checkpoints?.[0]?.id).toBe("c1");
+    expect(m.progress?.completed).toBe(true);
+  });
 });
 
 describe("writeManifest", () => {

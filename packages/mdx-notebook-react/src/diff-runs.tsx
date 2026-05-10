@@ -16,10 +16,10 @@ export function DiffRuns({ left, right, leftVariant, rightVariant, leftLabel, ri
   const leftOut = useCellOutput(left);
   const rightOut = useCellOutput(right);
 
-  const leftLines = isVariantMode
+  const leftLines: string[] = isVariantMode
     ? ((leftOut as any).variants?.[leftVariant!]?.stdout ?? []).map((e: any) => e.text)
     : leftOut.stdout.map((e) => e.text);
-  const rightLines = isVariantMode
+  const rightLines: string[] = isVariantMode
     ? ((rightOut as any).variants?.[rightVariant!]?.stdout ?? []).map((e: any) => e.text)
     : rightOut.stdout.map((e) => e.text);
 

@@ -1,6 +1,11 @@
 // packages/core/test/parse-directive.test.ts
 import { describe, it, expect } from "vitest";
-import { parseRunDirectiveAttrs, parseIpynbDirectiveAttrs, inferLang } from "../src/parse-directive.js";
+import {
+  parseRunDirectiveAttrs,
+  parseIpynbDirectiveAttrs,
+  parseCheckDirectiveAttrs,
+  inferLang
+} from "../src/parse-directive.js";
 import { BuildError } from "../src/errors.js";
 
 describe("parseRunDirectiveAttrs", () => {
@@ -74,6 +79,44 @@ describe("parseRunDirectiveAttrs — dependsOn", () => {
     expect(() =>
       parseRunDirectiveAttrs({ src: "./x.ts", id: "x", dependsOn: "a/b" }, loc())
     ).toThrow(/BAD_DEPENDS_ON/);
+  });
+});
+
+describe("parseCheckDirectiveAttrs", () => {
+  it("parses equals checkpoint", () => {
+    const x = parseCheckDirectiveAttrs(
+      { id: "c1", cell: "sum", equals: "10", path: "result", weight: "2" },
+      loc()
+    );
+    expect(x).toMatchObject({
+      id: "c1",
+      cell: "sum",
+      op: "equals",
+      expected: 10,
+      path: "result",
+      weight: 2,
+      required: true
+    });
+  });
+
+  it("parses exists with default true", () => {
+    const x = parseCheckDirectiveAttrs(
+      { id: "c2", cell: "sum", exists: "" },
+      loc()
+    );
+    expect(x.op).toBe("exists");
+    expect(x.expected).toBe(true);
+  });
+
+  it("requires exactly one operator", () => {
+    expect(() => parseCheckDirectiveAttrs(
+      { id: "c3", cell: "sum" },
+      loc()
+    )).toThrow(/BAD_CHECKPOINT/);
+    expect(() => parseCheckDirectiveAttrs(
+      { id: "c4", cell: "sum", equals: "1", gt: "0" },
+      loc()
+    )).toThrow(/BAD_CHECKPOINT/);
   });
 });
 
