@@ -15,3 +15,8 @@ export { ToolCallTimeline, type ToolCallEntry } from "./tool-call-timeline.js";
 export { TokenStream, type TokenStreamProps } from "./token-stream.js";
 export { ModelComparison, type ComparisonSide } from "./model-comparison.js";
 export { StreamingStdout, type StreamingStdoutProps } from "./streaming-stdout.js";
+export { Plot, type PlotProps, type PlotKind } from "./plot.js";
+export { Mermaid, type MermaidProps } from "./mermaid.js";
+export { Predict, type PredictProps } from "./predict.js";
+export { FillIn, type FillInProps } from "./fill-in.js";
+export { type NotebookPageEvent } from "./notebook-page.js";
