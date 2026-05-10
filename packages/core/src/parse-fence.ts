@@ -1,3 +1,5 @@
+import { BuildError } from "./errors.js";
+
 export type FenceInfo =
   | { runnable: false; lang: string }
   | { runnable: true; lang: string; attrs: Record<string, string> };
@@ -56,4 +58,19 @@ function unquote(s: string): string {
     return s.slice(1, -1);
   }
   return s;
+}
+
+export function parseTimeoutMs(value: string | undefined): number | undefined {
+  if (value === undefined) return undefined;
+  const m = /^(\d+)(ms|s|m)?$/.exec(value.trim());
+  if (!m) {
+    throw new BuildError({ code: "BAD_TIMEOUT", message: `BAD_TIMEOUT: invalid timeout "${value}"` });
+  }
+  const n = Number(m[1]);
+  if (n <= 0) {
+    throw new BuildError({ code: "BAD_TIMEOUT", message: `BAD_TIMEOUT: timeout must be > 0 (got "${value}")` });
+  }
+  const unit = m[2] ?? "ms";
+  const factor = unit === "ms" ? 1 : unit === "s" ? 1000 : 60_000;
+  return n * factor;
 }

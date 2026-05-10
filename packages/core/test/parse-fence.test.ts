@@ -1,6 +1,8 @@
 // packages/core/test/parse-fence.test.ts
 import { describe, it, expect } from "vitest";
 import { parseFenceInfo } from "../src/parse-fence.js";
+import { parseTimeoutMs } from "../src/parse-fence.js";
+import { BuildError } from "../src/errors.js";
 
 describe("parseFenceInfo", () => {
   it("returns non-runnable for fence without `run` token in 2nd position", () => {
@@ -44,4 +46,15 @@ describe("parseFenceInfo", () => {
       attrs: { id: "x" }
     });
   });
+});
+
+describe("parseTimeoutMs", () => {
+  it("undefined -> undefined", () => expect(parseTimeoutMs(undefined)).toBeUndefined());
+  it("plain number -> ms", () => expect(parseTimeoutMs("500")).toBe(500));
+  it("ms suffix", () => expect(parseTimeoutMs("250ms")).toBe(250));
+  it("seconds suffix", () => expect(parseTimeoutMs("10s")).toBe(10_000));
+  it("minutes suffix", () => expect(parseTimeoutMs("2m")).toBe(120_000));
+  it("rejects garbage", () => expect(() => parseTimeoutMs("abc")).toThrow(BuildError));
+  it("rejects zero", () => expect(() => parseTimeoutMs("0")).toThrow(BuildError));
+  it("rejects negative", () => expect(() => parseTimeoutMs("-5s")).toThrow(BuildError));
 });
