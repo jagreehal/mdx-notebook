@@ -69,3 +69,19 @@ test("Tutorial 03: streaming page renders StreamingStdout", async ({ page }, tes
   await expect(page.getByRole("link", { name: /AI agents/ }).first()).toBeVisible();
   await expect(page.getByRole("link", { name: /Comparing models/ }).first()).toBeVisible();
 });
+
+test("Components catalog page lists all renderers with live demos", async ({ page }, testInfo) => {
+  story.init(testInfo, { tags: ["catalog"] });
+  story.given("the components page is loaded");
+  await page.goto("/components");
+  await page.waitForLoadState("networkidle");
+
+  story.then("a Stdout demo renders");
+  await expect(page.getByText(/<Stdout cellId='hello'>/).first()).toBeVisible();
+
+  story.then("a Plot demo renders");
+  await expect(page.getByText(/<Plot kind='bar'/).first()).toBeVisible();
+
+  story.then("a MessageThread demo renders");
+  await expect(page.getByText(/<MessageThread/).first()).toBeVisible();
+});

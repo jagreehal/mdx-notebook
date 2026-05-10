@@ -1,6 +1,6 @@
 ---
 import Sidebar from "./Sidebar.astro";
-const { title = "mdx-notebook starter" } = Astro.props;
+const { title = "mdx-notebook" } = Astro.props;
 ---
 <html lang="en">
   <head>
@@ -8,47 +8,114 @@ const { title = "mdx-notebook starter" } = Astro.props;
     <meta name="viewport" content="width=device-width" />
     <title>{title}</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
-    <style>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" />
+    <style is:global>
       :root {
-        --sidebar-w: 240px;
-        --max-w: 760px;
+        --font-body: "Inter", system-ui, -apple-system, sans-serif;
+        --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+        --space-1: 0.25rem;
+        --space-2: 0.5rem;
+        --space-3: 0.75rem;
+        --space-4: 1rem;
+        --space-5: 1.5rem;
+        --space-6: 2rem;
+        --space-7: 3rem;
+        --space-8: 4rem;
+
+        --bg: #ffffff;
+        --bg-alt: #f6f7f9;
+        --bg-soft: #fafbfc;
+        --fg: #1a1a1a;
+        --fg-muted: #555;
+        --border: #e1e4e8;
+        --border-strong: #d0d7de;
+        --accent: #1f6feb;
+        --accent-hover: #1a5dc7;
+        --accent-soft: #eef4ff;
+        --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+        --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06);
+        --radius-sm: 4px;
+        --radius-md: 6px;
+        --radius-lg: 10px;
       }
-      body { margin: 0; font-family: system-ui, -apple-system, sans-serif; line-height: 1.6; color: #1a1a1a; }
-      .layout { display: grid; grid-template-columns: var(--sidebar-w) 1fr; min-height: 100vh; }
-      .sidebar { background: #f6f7f9; border-right: 1px solid #e1e4e8; padding: 1rem; overflow-y: auto; position: sticky; top: 0; height: 100vh; }
-      .main { padding: 2rem; max-width: var(--max-w); margin: 0 auto; width: 100%; }
-      h1 { font-size: 2rem; margin: 0 0 1rem; }
-      h2 { font-size: 1.25rem; margin-top: 2rem; }
-      header.top { padding: 0.75rem 1rem; border-bottom: 1px solid #e1e4e8; background: #fff; position: sticky; top: 0; z-index: 5; }
-      header.top .brand { font-weight: 700; font-size: 1.05rem; }
-      .lesson-nav { display: flex; justify-content: space-between; margin-top: 3rem; padding-top: 1rem; border-top: 1px solid #e1e4e8; }
-      .lesson-nav a { color: #1f6feb; text-decoration: none; }
-      .mdx-nb-callout {
-        border-left: 4px solid #999;
-        padding: 0.6rem 0.9rem;
-        margin: 0.75rem 0;
-        background: #f6f7f9;
-        border-radius: 0 6px 6px 0;
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #0d1117;
+          --bg-alt: #161b22;
+          --bg-soft: #1c2128;
+          --fg: #f0f6fc;
+          --fg-muted: #8b949e;
+          --border: #30363d;
+          --border-strong: #3e4651;
+          --accent: #58a6ff;
+          --accent-hover: #79b8ff;
+          --accent-soft: #0c2747;
+          --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+          --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
       }
-      .mdx-nb-callout-title { font-weight: 600; margin-bottom: 0.25rem; }
-      .mdx-nb-callout-tip { border-left-color: #2da44e; background: #f1faf3; }
-      .mdx-nb-callout-tip .mdx-nb-callout-title { color: #1a7f37; }
-      .mdx-nb-callout-info { border-left-color: #1f6feb; background: #f0f6ff; }
-      .mdx-nb-callout-info .mdx-nb-callout-title { color: #1f6feb; }
-      .mdx-nb-callout-warn { border-left-color: #d4a72c; background: #fff8c5; }
-      .mdx-nb-callout-warn .mdx-nb-callout-title { color: #9a6700; }
-      .mdx-nb-callout-danger { border-left-color: #cf222e; background: #ffebe9; }
+
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      body { font-family: var(--font-body); line-height: 1.6; color: var(--fg); background: var(--bg); -webkit-font-smoothing: antialiased; }
+      code, pre { font-family: var(--font-mono); }
+      a { color: var(--accent); text-decoration: none; }
+      a:hover { color: var(--accent-hover); text-decoration: underline; }
+      h1 { font-size: 2.25rem; font-weight: 700; letter-spacing: -0.02em; margin: 0 0 var(--space-3); line-height: 1.2; }
+      h2 { font-size: 1.5rem; font-weight: 600; letter-spacing: -0.01em; margin-top: var(--space-7); margin-bottom: var(--space-3); }
+      h3 { font-size: 1.15rem; font-weight: 600; margin-top: var(--space-5); margin-bottom: var(--space-2); }
+      p { margin: 0 0 var(--space-4); }
+
+      :root { --sidebar-w: 260px; --max-w: 760px; }
+      .layout { display: grid; grid-template-columns: var(--sidebar-w) 1fr; min-height: calc(100vh - 56px); }
+      .sidebar { background: var(--bg-alt); border-right: 1px solid var(--border); padding: var(--space-5) var(--space-4); overflow-y: auto; position: sticky; top: 56px; height: calc(100vh - 56px); }
+      .main { padding: var(--space-7) var(--space-6); max-width: var(--max-w); margin: 0 auto; width: 100%; }
+      header.top { padding: var(--space-3) var(--space-5); border-bottom: 1px solid var(--border); background: linear-gradient(180deg, var(--bg) 0%, var(--bg-alt) 100%); position: sticky; top: 0; z-index: 5; display: flex; align-items: center; justify-content: space-between; backdrop-filter: blur(8px); }
+      header.top .brand { font-weight: 700; font-size: 1.05rem; letter-spacing: -0.01em; }
+      header.top .brand-mark { display: inline-flex; align-items: center; gap: var(--space-2); }
+      header.top .brand-mark::before { content: ""; display: inline-block; width: 18px; height: 18px; border-radius: var(--radius-sm); background: linear-gradient(135deg, var(--accent), #6a8eff); }
+      header.top .header-links a { color: var(--fg-muted); margin-left: var(--space-4); font-size: 0.92rem; }
+      header.top .header-links a:hover { color: var(--fg); text-decoration: none; }
+
+      .lesson-nav { display: flex; justify-content: space-between; margin-top: var(--space-7); padding-top: var(--space-4); border-top: 1px solid var(--border); }
+      .lesson-nav a { color: var(--accent); font-weight: 500; }
+
+      .mdx-nb pre { background: var(--bg-soft); border: 1px solid var(--border); border-radius: var(--radius-md); }
+
+      /* Callout palette adjusted for dark mode via variables */
+      .mdx-nb-callout { border-left: 4px solid var(--border-strong); padding: var(--space-3) var(--space-4); margin: var(--space-3) 0; background: var(--bg-soft); border-radius: 0 var(--radius-md) var(--radius-md) 0; }
+      .mdx-nb-callout-title { font-weight: 600; margin-bottom: var(--space-1); }
+      .mdx-nb-callout-tip { border-left-color: #2da44e; background: color-mix(in srgb, #2da44e 8%, var(--bg-soft)); }
+      .mdx-nb-callout-tip .mdx-nb-callout-title { color: #2da44e; }
+      .mdx-nb-callout-info { border-left-color: var(--accent); background: var(--accent-soft); }
+      .mdx-nb-callout-info .mdx-nb-callout-title { color: var(--accent); }
+      .mdx-nb-callout-warn { border-left-color: #d4a72c; background: color-mix(in srgb, #d4a72c 10%, var(--bg-soft)); }
+      .mdx-nb-callout-warn .mdx-nb-callout-title { color: #c8951c; }
+      .mdx-nb-callout-danger { border-left-color: #cf222e; background: color-mix(in srgb, #cf222e 8%, var(--bg-soft)); }
       .mdx-nb-callout-danger .mdx-nb-callout-title { color: #cf222e; }
-      .mdx-nb-callout-success { border-left-color: #2da44e; background: #dafbe1; }
-      .mdx-nb-callout-success .mdx-nb-callout-title { color: #1a7f37; }
+      .mdx-nb-callout-success { border-left-color: #2da44e; background: color-mix(in srgb, #2da44e 10%, var(--bg-soft)); }
+      .mdx-nb-callout-success .mdx-nb-callout-title { color: #2da44e; }
+
       @media (max-width: 720px) {
         .layout { grid-template-columns: 1fr; }
-        .sidebar { position: static; height: auto; border-right: none; border-bottom: 1px solid #e1e4e8; }
+        .sidebar { position: static; height: auto; border-right: none; border-bottom: 1px solid var(--border); }
+        .main { padding: var(--space-5) var(--space-4); }
+        h1 { font-size: 1.85rem; }
       }
     </style>
   </head>
   <body>
-    <header class="top"><span class="brand">mdx-notebook</span></header>
+    <header class="top">
+      <a href="/" class="brand"><span class="brand-mark">mdx-notebook</span></a>
+      <div class="header-links">
+        <a href="/components">Components</a>
+        <a href="https://github.com/jagreehal/mdx-notebook" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </header>
     <div class="layout">
       <aside class="sidebar"><Sidebar /></aside>
       <main class="main"><slot /></main>

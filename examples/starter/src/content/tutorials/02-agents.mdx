@@ -2,6 +2,10 @@
 
 When an AI agent calls tools to answer a question, you get a tree of steps: user prompt, tool calls with input/output, and a final response. mdx-notebook captures all of it from a single executable cell.
 
+:::tip
+This tutorial calls Anthropic Claude for real when `ANTHROPIC_API_KEY` is set. Otherwise it falls back to a mocked agent loop, so the page always renders. Look for the `mocked: true` flag in the result JSON to tell which version you're seeing.
+:::
+
 :::run{src="../../scripts/tool-loop.ts" id="agent-loop"}
 :::
 
