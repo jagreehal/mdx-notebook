@@ -10,3 +10,8 @@ export { AgentTrace } from "./agent-trace.js";
 export { IpynbOutputs } from "./ipynb-outputs.js";
 export { Math, type MathProps } from "./math.js";
 export { NotebookCell, type NotebookCellProps } from "./notebook-cell.js";
+export { MessageThread, type Message, type ToolCall, type MessageThreadProps } from "./message-thread.js";
+export { ToolCallTimeline, type ToolCallEntry } from "./tool-call-timeline.js";
+export { TokenStream, type TokenStreamProps } from "./token-stream.js";
+export { ModelComparison, type ComparisonSide } from "./model-comparison.js";
+export { StreamingStdout, type StreamingStdoutProps } from "./streaming-stdout.js";
