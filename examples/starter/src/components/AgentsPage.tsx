@@ -18,7 +18,7 @@ export default function AgentsPage({ manifest }: { manifest: Manifest }) {
       {result?.mocked && (
         <div className="mdx-nb-callout mdx-nb-callout-warn" style={{ marginBottom: "1rem" }}>
           <div className="mdx-nb-callout-title">Mocked output</div>
-          <div>{result.note ?? "Set ANTHROPIC_API_KEY to see a real Claude response here."}</div>
+          <div>{result.note ?? "Set GOOGLE_API_KEY to see a real Gemini response here."}</div>
         </div>
       )}
       <h2>Step-by-step trace</h2>

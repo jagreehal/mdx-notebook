@@ -1,5 +1,5 @@
 // Tiny example agent. Used by Tutorial 01 (Getting started) and the HMR test.
-// If ANTHROPIC_API_KEY is set, makes a real Claude call. Otherwise returns a friendly mock.
+// If GOOGLE_API_KEY is set, makes a real Gemini call. Otherwise returns a friendly mock.
 
 interface Result {
   steps: number;
@@ -21,12 +21,14 @@ console.log("--- Step 2 ---");
 console.log("Composing response");
 
 export default async function (): Promise<Result> {
-  if (!process.env.ANTHROPIC_API_KEY) return mock;
+  if (!process.env.GOOGLE_API_KEY) return mock;
 
   try {
     const { generateText, tool } = await import("ai");
-    const { anthropic } = await import("@ai-sdk/anthropic");
+    const { createGoogleGenerativeAI } = await import("@ai-sdk/google");
     const { z } = await import("zod");
+
+    const google = createGoogleGenerativeAI({ apiKey: process.env.GOOGLE_API_KEY });
 
     const tools = {
       getWeather: tool({
@@ -44,7 +46,7 @@ export default async function (): Promise<Result> {
     };
 
     const result = await generateText({
-      model: anthropic("claude-3-5-haiku-20241022"),
+      model: google("gemini-2.5-flash"),
       tools,
       maxSteps: 5,
       messages: [{ role: "user", content: "Should I pack a jacket for Tokyo?" }]

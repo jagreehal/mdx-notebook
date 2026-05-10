@@ -1,5 +1,5 @@
 import { generateText, tool } from "ai";
-import { anthropic } from "@ai-sdk/anthropic";
+import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { z } from "zod";
 
 interface ToolCallEntry {
@@ -36,9 +36,11 @@ async function runWithLLM(): Promise<Result> {
 
   const toolCallLog: ToolCallEntry[] = [];
 
+  const google = createGoogleGenerativeAI({ apiKey: process.env.GOOGLE_API_KEY });
+
   const startedAt = Date.now();
   const result = await generateText({
-    model: anthropic("claude-3-5-haiku-20241022"),
+    model: google("gemini-2.5-flash"),
     tools: {
       getWeather: tool({
         description: "Get current weather for a city.",
@@ -117,14 +119,14 @@ function mockedResult(reason: string): Result {
 }
 
 export default async function (): Promise<Result> {
-  if (!process.env.ANTHROPIC_API_KEY) {
-    console.log("[mdx-notebook] ANTHROPIC_API_KEY not set — using mocked agent output.");
-    return mockedResult("Set ANTHROPIC_API_KEY in .env to run against a real model.");
+  if (!process.env.GOOGLE_API_KEY) {
+    console.log("[mdx-notebook] GOOGLE_API_KEY not set — using mocked agent output.");
+    return mockedResult("Set GOOGLE_API_KEY in .env to run against Google Gemini.");
   }
 
   try {
     const real = await runWithLLM();
-    console.log(`[mdx-notebook] Real Claude response captured: ${real.messages.length} messages, ${real.toolCalls.length} tool calls.`);
+    console.log(`[mdx-notebook] Real Gemini response captured: ${real.messages.length} messages, ${real.toolCalls.length} tool calls.`);
     return real;
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);

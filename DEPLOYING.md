@@ -20,12 +20,12 @@ The included [`examples/starter/vercel.json`](examples/starter/vercel.json) tell
 
 ### Optional: real LLM tutorial
 
-Tutorial 02 ("AI agents with tool use") will call Anthropic Claude for real if `ANTHROPIC_API_KEY` is set in the deployment environment. Without it, the page renders a mocked agent loop that has the same data shape — useful for offline / preview environments.
+Tutorial 02 ("AI agents with tool use") will call Google Gemini (2.5 Flash) for real if `GOOGLE_API_KEY` is set in the deployment environment. Without it, the page renders a mocked agent loop that has the same data shape — useful for offline / preview environments.
 
 In the Vercel dashboard:
 
 1. Project → Settings → Environment Variables
-2. Add `ANTHROPIC_API_KEY` with your key from <https://console.anthropic.com/settings/keys>
+2. Add `GOOGLE_API_KEY` with your key from <https://aistudio.google.com/apikey>
 3. Redeploy: `npx vercel --cwd examples/starter --prod`
 
 ## Quick deploy — Netlify
@@ -46,7 +46,7 @@ Cloudflare Pages auto-detects Astro. In the Pages UI:
 - **Build command:** `cd ../.. && pnpm install --frozen-lockfile && pnpm build && cd examples/starter && pnpm build`
 - **Build output directory:** `examples/starter/dist`
 - **Root directory:** `examples/starter`
-- **Environment variables (optional):** `ANTHROPIC_API_KEY`, `NODE_VERSION=20`
+- **Environment variables (optional):** `GOOGLE_API_KEY`, `NODE_VERSION=20`
 
 ## Static export
 
