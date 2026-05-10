@@ -25,4 +25,10 @@ export function useCellOutput<T = unknown>(cellId: string): CellOutput & { resul
   return value as CellOutput & { result?: T };
 }
 
+export function useOutputStore(): OutputStore {
+  const store = useContext(OutputContext);
+  if (!store) throw new Error("useOutputStore must be used within an <OutputProvider>");
+  return store;
+}
+
 export { OutputContext };

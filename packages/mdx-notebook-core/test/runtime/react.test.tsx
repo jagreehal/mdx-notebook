@@ -4,7 +4,7 @@ import { render, screen, act, cleanup } from "@testing-library/react";
 
 afterEach(cleanup);
 import * as React from "react";
-import { OutputProvider, useCellOutput } from "../../src/runtime/react.js";
+import { OutputProvider, useCellOutput, useOutputStore } from "../../src/runtime/react.js";
 import { createOutputStore } from "../../src/runtime/store.js";
 import type { Manifest } from "../../src/types.js";
 
@@ -36,5 +36,26 @@ describe("useCellOutput", () => {
 
   it("throws when no provider in scope", () => {
     expect(() => render(<Reader />)).toThrow(/OutputProvider/);
+  });
+});
+
+describe("useOutputStore", () => {
+  it("returns the store from context", () => {
+    const store = createOutputStore(m);
+    let captured: ReturnType<typeof useOutputStore> | undefined;
+    function StoreReader() {
+      captured = useOutputStore();
+      return null;
+    }
+    render(<OutputProvider store={store}><StoreReader /></OutputProvider>);
+    expect(captured).toBe(store);
+  });
+
+  it("throws without provider", () => {
+    function StoreReader() {
+      useOutputStore();
+      return null;
+    }
+    expect(() => render(<StoreReader />)).toThrow(/OutputProvider/);
   });
 });
