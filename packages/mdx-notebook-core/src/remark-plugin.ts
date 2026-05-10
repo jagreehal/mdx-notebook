@@ -4,7 +4,7 @@ import type { Plugin } from "unified";
 import type { Root, Code } from "mdast";
 import { visit } from "unist-util-visit";
 import { BuildError } from "./errors.js";
-import { parseFenceInfo, parseTimeoutMs } from "./parse-fence.js";
+import { parseFenceInfo, parseTimeoutMs, parseDependsOn } from "./parse-fence.js";
 import {
   parseRunDirectiveAttrs,
   parseIpynbDirectiveAttrs,
@@ -45,14 +45,18 @@ export const remarkMdxNotebook: Plugin<[RemarkMdxNotebookOptions], Root> = (opts
         throw new BuildError({ code: "MISSING_ID", message: "MISSING_ID: code fence missing required `id`", loc });
       }
       assertUnique(seen, id, loc);
+      const timeout = parseTimeoutMs(info.attrs.timeout);
+      const cache = parseCacheAttr(info.attrs.cache);
+      const dependsOnInline = parseDependsOn(info.attrs.dependsOn);
       opts.collect.cells.push({
         kind: "inline",
         id,
         lang: info.lang,
         code: node.value + (node.value.endsWith("\n") ? "" : "\n"),
-        timeout: parseTimeoutMs(info.attrs.timeout),
-        cache: parseCacheAttr(info.attrs.cache),
-        env: info.attrs.env,
+        ...(timeout !== undefined ? { timeout } : {}),
+        ...(cache !== undefined ? { cache } : {}),
+        ...(info.attrs.env !== undefined ? { env: info.attrs.env } : {}),
+        ...(dependsOnInline !== undefined ? { dependsOn: dependsOnInline } : {}),
         loc
       });
     });
@@ -70,9 +74,10 @@ export const remarkMdxNotebook: Plugin<[RemarkMdxNotebookOptions], Root> = (opts
           id: a.id,
           lang,
           src: a.src,
-          timeout: a.timeout,
-          cache: a.cache,
-          env: a.env,
+          ...(a.timeout !== undefined ? { timeout: a.timeout } : {}),
+          ...(a.cache !== undefined ? { cache: a.cache } : {}),
+          ...(a.env !== undefined ? { env: a.env } : {}),
+          ...(a.dependsOn !== undefined ? { dependsOn: a.dependsOn } : {}),
           loc
         });
       } else if (dir.name === "ipynb") {

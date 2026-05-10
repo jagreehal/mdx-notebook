@@ -76,4 +76,24 @@ describe("remarkMdxNotebook", () => {
     const src = ":::run{src=\"./x.rb\" id=\"r\"}\n:::\n";
     expect(() => process(src, "x.mdx")).toThrow(/UNKNOWN_LANG/);
   });
+
+  it("attaches dependsOn from fence attrs to inline cell", () => {
+    const src = "```ts run id=b dependsOn=a\nconsole.log(1);\n```\n";
+    const c = process(src, "x.mdx");
+    expect(c.cells[0]).toMatchObject({
+      kind: "inline",
+      id: "b",
+      dependsOn: ["a"]
+    });
+  });
+
+  it("attaches dependsOn from directive attrs to file cell", () => {
+    const src = ':::run{src="./step2.ts" id="step2" dependsOn="step1,step0"}\n:::\n';
+    const c = process(src, "x.mdx");
+    expect(c.cells[0]).toMatchObject({
+      kind: "file",
+      id: "step2",
+      dependsOn: ["step1", "step0"]
+    });
+  });
 });
