@@ -2,6 +2,8 @@
 
 `examples/starter` is a fully working Astro site. Deploying it gives you a live demo of mdx-notebook.
 
+The canonical live demo is at <https://mdx-notebook-demo.vercel.app>.
+
 ## Quick deploy — Vercel
 
 From the repo root:
@@ -10,7 +12,9 @@ From the repo root:
 npx vercel --cwd examples/starter
 ```
 
-The first run prompts you to link a project and pick a Vercel team. Follow the prompts. Subsequent deploys are `npx vercel --cwd examples/starter --prod`.
+The first run prompts you to link a project and pick a Vercel team. **When prompted for a project name, enter `mdx-notebook-demo`** so the auto-assigned URL becomes `mdx-notebook-demo.vercel.app`.
+
+Subsequent deploys are `npx vercel --cwd examples/starter --prod`.
 
 The included [`examples/starter/vercel.json`](examples/starter/vercel.json) tells Vercel to install workspace dependencies from the repo root and then build the starter — so the workspace deps (`mdx-notebook-core`, `mdx-notebook-react`, etc.) resolve correctly.
 
