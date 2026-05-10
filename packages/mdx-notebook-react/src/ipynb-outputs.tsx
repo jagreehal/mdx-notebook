@@ -1,4 +1,5 @@
-import { useCellOutput, type IpynbOutput } from "mdx-notebook-core";
+import { useCellOutput } from "mdx-notebook-core/runtime/react";
+import type { IpynbOutput } from "mdx-notebook-core";
 import { JsonView } from "./json-view.js";
 
 export function IpynbOutputs({ cellId }: { cellId: string }) {

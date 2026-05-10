@@ -3,7 +3,6 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
   test: {
     environment: "node",
-    environmentMatchGlobs: [["test/runtime/react.test.tsx", "jsdom"]],
     coverage: {
       provider: "v8",
       include: ["src/**/*.ts", "src/**/*.tsx"],

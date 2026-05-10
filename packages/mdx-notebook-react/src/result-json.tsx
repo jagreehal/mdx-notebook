@@ -1,4 +1,4 @@
-import { useCellOutput } from "mdx-notebook-core";
+import { useCellOutput } from "mdx-notebook-core/runtime/react";
 import { JsonView } from "./json-view.js";
 
 export function ResultJSON({ cellId, indent }: { cellId: string; indent?: number }) {

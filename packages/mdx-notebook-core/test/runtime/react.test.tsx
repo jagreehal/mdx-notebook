@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 // packages/core/test/runtime/react.test.tsx
 import { describe, it, expect, afterEach } from "vitest";
 import { render, screen, act, cleanup } from "@testing-library/react";

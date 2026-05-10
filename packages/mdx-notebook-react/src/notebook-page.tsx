@@ -1,4 +1,4 @@
-import { OutputProvider } from "mdx-notebook-core";
+import { OutputProvider } from "mdx-notebook-core/runtime/react";
 import { createOutputStore } from "mdx-notebook-core/runtime";
 import type { Manifest } from "mdx-notebook-core";
 import { type ReactNode, useMemo, useEffect } from "react";

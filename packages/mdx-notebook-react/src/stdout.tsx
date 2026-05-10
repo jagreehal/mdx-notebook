@@ -1,4 +1,4 @@
-import { useCellOutput } from "mdx-notebook-core";
+import { useCellOutput } from "mdx-notebook-core/runtime/react";
 
 export function Stdout({ cellId }: { cellId: string }) {
   const out = useCellOutput(cellId);

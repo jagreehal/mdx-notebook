@@ -7,6 +7,10 @@ export default defineConfig({
   integrations: [mdx(), react(), mdxNotebook()],
   vite: {
     server: { fs: { allow: [".."] } },
+    resolve: {
+      // Deduplicate react to ensure only one React instance across workspace packages.
+      dedupe: ["react", "react-dom"],
+    },
     ssr: {
       // Keep these as CJS/ESM externals so import.meta.url resolves correctly
       // in the runner's harness locator (locateHarness uses import.meta.url)

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useCellOutput, useOutputStore } from "mdx-notebook-core";
+import { useCellOutput, useOutputStore } from "mdx-notebook-core/runtime/react";
 
 export interface JsonEditorProps {
   cellId: string;
