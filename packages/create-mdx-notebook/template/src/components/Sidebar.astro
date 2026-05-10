@@ -1,0 +1,31 @@
+---
+const tutorials = [
+  { slug: "01-getting-started", title: "1. Getting started" },
+  { slug: "02-agents",          title: "2. AI agents with tool use" },
+  { slug: "03-streaming",       title: "3. Streaming token output" },
+  { slug: "04-comparing-models", title: "4. Comparing models" }
+];
+const reference = [
+  { href: "/components", title: "Components" }
+];
+const current = Astro.url.pathname;
+
+function navStyle(active: boolean) {
+  return `display: block; padding: 0.4rem 0.6rem; border-radius: 6px; color: ${active ? "var(--accent)" : "var(--fg)"}; text-decoration: none; font-weight: ${active ? "600" : "400"}; background: ${active ? "var(--accent-soft)" : "transparent"};`;
+}
+---
+<nav>
+  <h3 style="margin: 0 0 0.5rem; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--fg-muted);">Tutorials</h3>
+  <ul style="list-style: none; padding: 0; margin: 0 0 1.5rem;">
+    <li><a href="/" style={navStyle(current === "/")}>Welcome</a></li>
+    {tutorials.map((t) => (
+      <li><a href={`/tutorials/${t.slug}`} style={navStyle(current.includes(t.slug))}>{t.title}</a></li>
+    ))}
+  </ul>
+  <h3 style="margin: 0 0 0.5rem; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--fg-muted);">Reference</h3>
+  <ul style="list-style: none; padding: 0; margin: 0;">
+    {reference.map((r) => (
+      <li><a href={r.href} style={navStyle(current.startsWith(r.href))}>{r.title}</a></li>
+    ))}
+  </ul>
+</nav>

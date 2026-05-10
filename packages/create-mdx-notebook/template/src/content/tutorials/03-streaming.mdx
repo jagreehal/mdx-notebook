@@ -1,0 +1,8 @@
+# Streaming token output
+
+Long-running cells (like LLM calls or agents) take real time. By default, the page renders the captured output instantly — but `<StreamingStdout>` replays the *original timestamps* so viewers experience the cadence.
+
+:::run{src="../../scripts/stream-tokens.ts" id="stream"}
+:::
+
+The cell took roughly 600 ms to run at build time (5 lines x 120 ms delay each). The component below replays that cadence at 2.5x speed.

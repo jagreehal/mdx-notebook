@@ -1,0 +1,8 @@
+[build]
+  base = "examples/starter"
+  command = "cd ../.. && pnpm install --frozen-lockfile && pnpm build && cd examples/starter && pnpm build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+  PNPM_VERSION = "9"

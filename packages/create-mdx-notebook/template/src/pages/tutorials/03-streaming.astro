@@ -1,0 +1,18 @@
+---
+import Layout from "../../components/Layout.astro";
+import { runNotebook } from "mdx-notebook-astro";
+import StreamingPage from "../../components/StreamingPage.tsx";
+
+const manifest = await runNotebook("./src/content/tutorials/03-streaming.mdx");
+---
+<Layout title="Streaming token output — mdx-notebook">
+  <h1>Streaming token output</h1>
+  <p>Captured stdout, replayed with original timestamps. No actual server-side streaming — pure animation.</p>
+
+  <StreamingPage manifest={manifest} client:load />
+
+  <nav class="lesson-nav">
+    <a href="/tutorials/02-agents">← AI agents</a>
+    <a href="/tutorials/04-comparing-models">Next: Comparing models →</a>
+  </nav>
+</Layout>

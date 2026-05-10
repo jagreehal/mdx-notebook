@@ -1,0 +1,9 @@
+---
+import Layout from "../components/Layout.astro";
+import ComponentsCatalog from "../components/ComponentsCatalog.tsx";
+---
+<Layout title="Components — mdx-notebook">
+  <h1>Components</h1>
+  <p>Every renderer in <code>mdx-notebook-react</code> with a live demo and copy-pasteable usage. All examples render against a synthetic manifest, so they work without any executed cell behind them.</p>
+  <ComponentsCatalog client:load />
+</Layout>
