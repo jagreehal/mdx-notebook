@@ -56,6 +56,27 @@ describe("inferLang", () => {
   });
 });
 
+describe("parseRunDirectiveAttrs — dependsOn", () => {
+  it("parses dependsOn as string array", () => {
+    const result = parseRunDirectiveAttrs(
+      { src: "./x.ts", id: "x", dependsOn: "a,b" },
+      loc()
+    );
+    expect(result.dependsOn).toEqual(["a", "b"]);
+  });
+
+  it("dependsOn absent → undefined", () => {
+    const result = parseRunDirectiveAttrs({ src: "./x.ts", id: "x" }, loc());
+    expect(result.dependsOn).toBeUndefined();
+  });
+
+  it("invalid dependsOn id throws BAD_DEPENDS_ON", () => {
+    expect(() =>
+      parseRunDirectiveAttrs({ src: "./x.ts", id: "x", dependsOn: "a/b" }, loc())
+    ).toThrow(/BAD_DEPENDS_ON/);
+  });
+});
+
 function loc() {
   return { file: "p.mdx", line: 1, column: 1 };
 }

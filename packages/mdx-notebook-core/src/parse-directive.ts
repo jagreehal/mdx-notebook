@@ -1,6 +1,6 @@
 import { extname } from "node:path";
 import { BuildError } from "./errors.js";
-import { parseTimeoutMs } from "./parse-fence.js";
+import { parseTimeoutMs, parseDependsOn } from "./parse-fence.js";
 import { parseCellsSelector } from "./cells-selector.js";
 import type { Loc } from "./types.js";
 
@@ -10,6 +10,7 @@ export interface RunAttrs {
   timeout: number | undefined;
   cache: boolean | undefined;
   env: string | undefined;
+  dependsOn: string[] | undefined;
 }
 
 export interface IpynbAttrs {
@@ -29,7 +30,8 @@ export function parseRunDirectiveAttrs(
     src,
     timeout: parseTimeoutMs(raw.timeout),
     cache: parseBool(raw.cache),
-    env: raw.env
+    env: raw.env,
+    dependsOn: parseDependsOn(raw.dependsOn)
   };
 }
 
