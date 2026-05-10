@@ -12,6 +12,14 @@ if (!target || !resultFile) {
   process.exit(2);
 }
 
+if (process.env.MDX_NB_DEPS) {
+  try {
+    globalThis.MDX_NB_DEPS = JSON.parse(process.env.MDX_NB_DEPS);
+  } catch {
+    // ignore parse failure; users can still read process.env.MDX_NB_DEPS as string
+  }
+}
+
 const envelope = { ok: true, hasResult: false, result: undefined, error: undefined };
 
 try {
