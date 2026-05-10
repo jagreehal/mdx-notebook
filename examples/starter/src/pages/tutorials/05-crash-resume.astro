@@ -1,0 +1,20 @@
+---
+import Layout from "../../components/Layout.astro";
+import CrashResumePage from "../../components/CrashResumePage.tsx";
+import { runNotebook } from "mdx-notebook-astro";
+import { getAdjacent } from "../../tutorials.config.ts";
+
+const manifest = await runNotebook("./src/content/tutorials/05-crash-resume.mdx");
+const { prev, next } = getAdjacent("05-crash-resume");
+---
+<Layout title="Crash and resume">
+  <h1>Crash and resume</h1>
+  <p>Same script, three env vars, three captured outputs. Compare with DiffRuns.</p>
+
+  <CrashResumePage manifest={manifest} client:load />
+
+  <nav class="lesson-nav">
+    {prev && <a href={`/tutorials/${prev.slug}`}>← {prev.title}</a>}
+    {next && <a href={`/tutorials/${next.slug}`}>{next.title} →</a>}
+  </nav>
+</Layout>

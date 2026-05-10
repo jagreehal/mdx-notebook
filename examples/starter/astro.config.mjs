@@ -16,7 +16,7 @@ export default defineConfig({
     }),
     mdx(),
     react(),
-    mdxNotebook({ callouts: true })
+    mdxNotebook({ callouts: true, env: ["GOOGLE_API_KEY", "CRASH_AFTER", "RESUMING"] })
   ],
   vite: {
     server: { fs: { allow: ["..", "../../node_modules/.pnpm"] } },

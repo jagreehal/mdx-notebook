@@ -19,8 +19,9 @@ export interface TutorialGroup {
 
 export const groups: TutorialGroup[] = [
   { name: "Foundations", description: "Core mdx-notebook concepts.", order: 1 },
-  { name: "AI", description: "Patterns for AI tutorials.", order: 2 },
-  { name: "Reference", order: 3 }
+  { name: "Patterns", description: "Real-world authoring patterns.", order: 2 },
+  { name: "AI", description: "Patterns for AI tutorials.", order: 3 },
+  { name: "Reference", order: 4 }
 ];
 
 export const lessons: LessonMeta[] = [
@@ -56,6 +57,15 @@ export const lessons: LessonMeta[] = [
     blurb: "Run the same prompt against two configurations and view results side-by-side.",
     group: "AI",
     durationMin: 5,
+    level: "intermediate",
+    prereqs: ["02-agents"]
+  },
+  {
+    slug: "05-crash-resume",
+    title: "Crash and resume — run matrix",
+    blurb: "Run the same script with different env vars; capture all variants in one cell. Compare with DiffRuns.",
+    group: "Patterns",
+    durationMin: 8,
     level: "intermediate",
     prereqs: ["02-agents"]
   }

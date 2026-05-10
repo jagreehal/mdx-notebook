@@ -11,7 +11,7 @@ export interface RunMatrixProps {
 
 export function RunMatrix({ cellId, showStdout = true, showStderr = true, showResult = true }: RunMatrixProps) {
   const out = useCellOutput(cellId);
-  const variants = (out as any).variants as Record<string, any> | undefined;
+  const variants = out.variants;
   const labels = variants ? Object.keys(variants) : [];
   const [active, setActive] = useState(labels[0] ?? "");
 

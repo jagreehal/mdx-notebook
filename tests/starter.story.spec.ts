@@ -85,3 +85,21 @@ test("Components catalog page lists all renderers with live demos", async ({ pag
   story.then("a MessageThread demo renders");
   await expect(page.getByText(/<MessageThread/).first()).toBeVisible();
 });
+
+test("Tutorial 05: crash-resume page renders matrix and diff", async ({ page }, testInfo) => {
+  story.init(testInfo, { tags: ["crash-resume"] });
+  story.given("the crash-resume tutorial page is loaded");
+  await page.goto("/tutorials/05-crash-resume");
+  await page.waitForLoadState("networkidle");
+
+  story.then("the RunMatrix tabs are visible");
+  await expect(page.getByRole("tab", { name: /happy/i }).first()).toBeVisible();
+  await expect(page.getByRole("tab", { name: /crash/i }).first()).toBeVisible();
+  await expect(page.getByRole("tab", { name: /resume/i }).first()).toBeVisible();
+
+  story.then("the DiffRuns shows the resume-only lines");
+  await expect(page.getByText(/replayed from journal/i).first()).toBeVisible();
+
+  story.then("the CodeDiff shows naive vs durable");
+  await expect(page.getByText(/runStep\(state/).first()).toBeVisible();
+});
