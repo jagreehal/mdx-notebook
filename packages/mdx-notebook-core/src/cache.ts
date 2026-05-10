@@ -10,12 +10,13 @@ export interface CacheKeyInputs {
   nodeVersion: string;
   lockfile: string;           // lockfile content hash or empty
   env: string;                // env file content if used, else empty
+  depsHash: string;           // SHA-256 of JSON-stringified dep results; empty string when no deps
 }
 
 export function computeCacheKey(inputs: CacheKeyInputs): string {
   const h = createHash("sha256");
   const parts: Array<keyof CacheKeyInputs> = [
-    "sourceBytes", "runner", "runnerVersion", "nodeVersion", "lockfile", "env"
+    "sourceBytes", "runner", "runnerVersion", "nodeVersion", "lockfile", "env", "depsHash"
   ];
   for (const k of parts) {
     h.update(`${k} ${inputs[k]}`);

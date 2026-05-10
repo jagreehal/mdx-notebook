@@ -23,17 +23,17 @@ beforeEach(async () => {
 describe("computeCacheKey", () => {
   it("is deterministic", () => {
     const a: CacheKeyInputs = {
-      sourceBytes: "x", runner: "ts", runnerVersion: "1", nodeVersion: "20", lockfile: "abc", env: ""
+      sourceBytes: "x", runner: "ts", runnerVersion: "1", nodeVersion: "20", lockfile: "abc", env: "", depsHash: ""
     };
     expect(computeCacheKey(a)).toBe(computeCacheKey(a));
   });
   it("changes when source changes", () => {
-    const a: CacheKeyInputs = { sourceBytes: "x", runner: "ts", runnerVersion: "1", nodeVersion: "20", lockfile: "", env: "" };
+    const a: CacheKeyInputs = { sourceBytes: "x", runner: "ts", runnerVersion: "1", nodeVersion: "20", lockfile: "", env: "", depsHash: "" };
     const b: CacheKeyInputs = { ...a, sourceBytes: "y" };
     expect(computeCacheKey(a)).not.toBe(computeCacheKey(b));
   });
   it("changes when runner version changes", () => {
-    const a: CacheKeyInputs = { sourceBytes: "x", runner: "ts", runnerVersion: "1", nodeVersion: "20", lockfile: "", env: "" };
+    const a: CacheKeyInputs = { sourceBytes: "x", runner: "ts", runnerVersion: "1", nodeVersion: "20", lockfile: "", env: "", depsHash: "" };
     const b: CacheKeyInputs = { ...a, runnerVersion: "2" };
     expect(computeCacheKey(a)).not.toBe(computeCacheKey(b));
   });
