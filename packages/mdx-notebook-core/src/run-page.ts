@@ -47,7 +47,8 @@ export async function runPage(mdxPath: string, opts: RunPageOptions): Promise<Ma
 
   const outputs = await runConcurrent(collected.cells, concurrency, async (cell) => {
     const cacheKey = await maybeCacheKey(cell, absMdx, lockfileContent, nodeVersion);
-    if (useCache && cell.cache !== false && cacheKey) {
+    const cacheEnabled = cell.kind === "ipynb" ? false : cell.cache !== false;
+    if (useCache && cacheEnabled && cacheKey) {
       const hit = await readCache(cacheRoot, cacheKey);
       if (hit) return hit;
     }
@@ -56,7 +57,7 @@ export async function runPage(mdxPath: string, opts: RunPageOptions): Promise<Ma
       env: process.env as Record<string, string>,
       defaultTimeoutMs
     }, (p) => readFileSync(p, "utf8"));
-    if (cacheKey && cell.cache !== false) {
+    if (cacheKey && cacheEnabled) {
       await writeCache(cacheRoot, cacheKey, out);
     }
     if (opts.strict && out.status !== "ok") {

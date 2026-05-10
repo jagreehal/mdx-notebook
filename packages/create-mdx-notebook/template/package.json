@@ -14,12 +14,16 @@
     "@astrojs/mdx": "^4.0.0",
     "@astrojs/react": "^4.0.0",
     "astro": "^5.0.0",
+    "astro-expressive-code": "^0.40.0",
+    "@expressive-code/plugin-collapsible-sections": "^0.40.0",
+    "@expressive-code/plugin-line-numbers": "^0.40.0",
     "mdx-notebook-astro": "workspace:*",
     "mdx-notebook-core": "workspace:*",
     "mdx-notebook-react": "workspace:*",
     "mdx-notebook-runner-ts": "workspace:*",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "recharts": "^2.0.0"
   },
   "devDependencies": {
     "@types/react": "^19.0.0",

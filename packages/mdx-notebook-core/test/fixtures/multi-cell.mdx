@@ -1,0 +1,9 @@
+```ts run id=numbers
+export default async () => [1, 2, 3, 4];
+```
+
+```ts run id=sum dependsOn=numbers
+const deps = globalThis.MDX_NB_DEPS ?? {};
+const arr = deps.numbers ?? [];
+export default () => arr.reduce((a, b) => a + b, 0);
+```

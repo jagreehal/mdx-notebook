@@ -22,11 +22,23 @@ const PlotImpl = lazy(async () => {
       )) as ComponentType<PlotProps>
     };
   }
-  const { LineChart, BarChart, ScatterChart, Line, Bar, Scatter, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer, Legend } = recharts as Record<string, ComponentType<Record<string, unknown>>>;
+  const r = recharts as Record<string, unknown>;
+  const LineChart = r.LineChart as ComponentType<Record<string, unknown>>;
+  const BarChart = r.BarChart as ComponentType<Record<string, unknown>>;
+  const ScatterChart = r.ScatterChart as ComponentType<Record<string, unknown>>;
+  const Line = r.Line as ComponentType<Record<string, unknown>>;
+  const Bar = r.Bar as ComponentType<Record<string, unknown>>;
+  const Scatter = r.Scatter as ComponentType<Record<string, unknown>>;
+  const XAxis = r.XAxis as ComponentType<Record<string, unknown>>;
+  const YAxis = r.YAxis as ComponentType<Record<string, unknown>>;
+  const Tooltip = r.Tooltip as ComponentType<Record<string, unknown>>;
+  const CartesianGrid = r.CartesianGrid as ComponentType<Record<string, unknown>>;
+  const ResponsiveContainer = r.ResponsiveContainer as ComponentType<Record<string, unknown>>;
+  const Legend = r.Legend as ComponentType<Record<string, unknown>>;
   const Component: ComponentType<PlotProps> = ({ data, x, y, kind = "line", width, height = 240 }) => {
     const ys = Array.isArray(y) ? y : [y];
-    const Chart = kind === "bar" ? BarChart : kind === "scatter" ? ScatterChart : LineChart;
-    const Series = kind === "bar" ? Bar : kind === "scatter" ? Scatter : Line;
+    const Chart = (kind === "bar" ? BarChart : kind === "scatter" ? ScatterChart : LineChart) as ComponentType<Record<string, unknown>>;
+    const Series = (kind === "bar" ? Bar : kind === "scatter" ? Scatter : Line) as ComponentType<Record<string, unknown>>;
     const colors = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd"];
     return (
       <ResponsiveContainer width={width ?? "100%"} height={height}>

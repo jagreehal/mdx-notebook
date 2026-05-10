@@ -1,0 +1,22 @@
+# Callouts demo
+
+:::tip
+Code in this site runs at build time. Outputs are typed and bound to React components.
+:::
+
+:::warn
+Cells declared with `id` must be unique on the page — duplicate ids fail the build.
+:::
+
+:::info[Authoring]
+You can also reference real source files: `:::run{src="./agent.ts" id="trace"}:::`.
+:::
+
+## A highlighted code block
+
+```ts showLineNumbers
+import { runNotebook } from "mdx-notebook-astro";
+import { Page } from "../components/Page.tsx";
+
+const manifest = await runNotebook("./src/content/tutorial.mdx");
+```

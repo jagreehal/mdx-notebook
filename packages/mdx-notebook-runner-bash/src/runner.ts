@@ -26,8 +26,8 @@ export const runnerBash: Runner = {
     const code = cell.kind === "inline" ? cell.code : undefined;
 
     const r = await spawnBash({
-      code,
-      file,
+      ...(code !== undefined ? { code } : {}),
+      ...(file !== undefined ? { file } : {}),
       cwd,
       env: ctx.env,
       timeoutMs: cell.timeout ?? ctx.timeoutMs,

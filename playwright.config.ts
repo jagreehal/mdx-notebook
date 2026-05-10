@@ -36,7 +36,7 @@ export default defineConfig({
     { name: "chromium", use: { ...devices["Desktop Chrome"] } }
   ],
   webServer: {
-    command: "pnpm --filter mdx-notebook-starter dev",
+    command: "env -u NO_COLOR pnpm --filter mdx-notebook-starter dev",
     url: "http://localhost:4321",
     reuseExistingServer: !process.env.CI,
     timeout: 60_000

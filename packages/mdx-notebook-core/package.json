@@ -21,7 +21,7 @@
   },
   "files": ["dist"],
   "scripts": {
-    "build": "tsdown",
+    "build": "bash -lc 'set -o pipefail; FILTER=\"Invalid input options \\\\(1 issue found\\\\)|For the \\\\\\\"define\\\\\\\"\\\\. +Invalid key|\\\\[PLUGIN_TIMINGS\\\\]|Your build spent significant time in plugin|See https://rolldown.rs/options/checks#plugintimings|rolldown-plugin-dts:generate|rolldown-plugin-dts:resolver\"; tsdown 2>&1 | { if command -v rg >/dev/null 2>&1; then rg -v \"$FILTER\" || true; else grep -Ev \"$FILTER\" || true; fi; }; exit ${PIPESTATUS[0]}'",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",

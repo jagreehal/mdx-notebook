@@ -7,13 +7,13 @@
   "engines": { "node": ">=20" },
   "scripts": {
     "build": "turbo run build",
-    "test": "turbo run test",
-    "test:watch": "turbo run test:watch --parallel",
+    "test": "turbo run test --concurrency=4",
+    "test:watch": "turbo run test:watch --parallel --concurrency=4",
     "test:unit": "vitest run",
     "test:stories": "vitest run --config vitest.stories.config.ts",
-    "test:e2e": "PLAYWRIGHT_HTML_OPEN=never playwright test",
+    "test:e2e": "env -u NO_COLOR PLAYWRIGHT_HTML_OPEN=never playwright test",
     "test:all": "pnpm run typecheck && pnpm run test && pnpm run test:stories && pnpm run test:e2e",
-    "typecheck": "turbo run typecheck",
+    "typecheck": "turbo run typecheck --concurrency=4",
     "clean": "turbo run clean && rm -rf node_modules .turbo"
   },
   "devDependencies": {

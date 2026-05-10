@@ -31,7 +31,7 @@ export function NotebookCell({
     <div className="mdx-nb-cell">
       {code !== undefined && (
         <div className="mdx-nb-cell-source">
-          <CodeBlock code={code} language={language} />
+          <CodeBlock code={code} {...(language !== undefined ? { language } : {})} />
         </div>
       )}
       <div className="mdx-nb-cell-output">
