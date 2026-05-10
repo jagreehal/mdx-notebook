@@ -1,13 +1,9 @@
 ---
 import Layout from "../components/Layout.astro";
 import CopyButton from "../components/CopyButton.tsx";
+import { getLessonsByGroup } from "../tutorials.config.ts";
 
-const tutorials = [
-  { slug: "01-getting-started", title: "Getting started", blurb: "Three cell forms — inline code, file references, and Jupyter notebooks." },
-  { slug: "02-agents",          title: "AI agents with tool use", blurb: "Capture an agent's tool-call timeline and step-by-step reasoning." },
-  { slug: "03-streaming",       title: "Streaming token output", blurb: "Replay captured stdout as it would have streamed, live in the browser." },
-  { slug: "04-comparing-models", title: "Comparing models", blurb: "Run the same prompt against two configurations and view results side-by-side." }
-];
+const grouped = getLessonsByGroup().filter((g) => g.lessons.length > 0);
 ---
 <Layout title="mdx-notebook — runnable docs">
   <section style="padding: 2rem 0 1rem;">
@@ -25,15 +21,23 @@ const tutorials = [
     </div>
   </section>
 
-  <section style="margin-top: 3rem;">
-    <h2 style="margin-top: 0;">Tutorials</h2>
-    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem;">
-      {tutorials.map((t) => (
-        <a href={`/tutorials/${t.slug}`} style="display: block; padding: 1.25rem; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--bg); transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease; text-decoration: none; color: var(--fg);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='var(--shadow-md)'; this.style.borderColor='var(--border-strong)';" onmouseout="this.style.transform=''; this.style.boxShadow=''; this.style.borderColor='var(--border)';">
-          <div style="font-weight: 600; font-size: 1.05rem; margin-bottom: 0.4rem;">{t.title}</div>
-          <div style="color: var(--fg-muted); font-size: 0.92rem; line-height: 1.5;">{t.blurb}</div>
-        </a>
-      ))}
-    </div>
-  </section>
+  {grouped.map((g) => (
+    <section style="margin-top: 3rem;">
+      <h2 style="margin-top: 0;">{g.group.name}</h2>
+      {g.group.description && (
+        <p style="color: var(--fg-muted); margin-bottom: 1rem;">{g.group.description}</p>
+      )}
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem;">
+        {g.lessons.map((l) => (
+          <a href={`/tutorials/${l.slug}`} style="display: block; padding: 1.25rem; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--bg); transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease; text-decoration: none; color: var(--fg);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='var(--shadow-md)'; this.style.borderColor='var(--border-strong)';" onmouseout="this.style.transform=''; this.style.boxShadow=''; this.style.borderColor='var(--border)';">
+            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.4rem;">
+              <div style="font-weight: 600; font-size: 1.05rem;">{l.title}</div>
+              {l.durationMin && <span style="font-size: 0.78rem; color: var(--fg-muted);">{l.durationMin} min</span>}
+            </div>
+            {l.blurb && <div style="color: var(--fg-muted); font-size: 0.92rem; line-height: 1.5;">{l.blurb}</div>}
+          </a>
+        ))}
+      </div>
+    </section>
+  ))}
 </Layout>
