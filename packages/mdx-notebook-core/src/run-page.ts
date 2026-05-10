@@ -10,7 +10,8 @@ import { dispatchCell } from "./dispatcher.js";
 import { computePageId } from "./page-id.js";
 import { computeCacheKey, readCache, writeCache } from "./cache.js";
 import { buildManifest, writeManifest } from "./manifest.js";
-import type { Cell, CellOutput, Manifest } from "./types.js";
+import { topologicalRun, hashDepsResults } from "./scheduler.js";
+import type { Cell, Manifest } from "./types.js";
 import { BuildError } from "./errors.js";
 
 export interface RunPageOptions {
@@ -39,22 +40,29 @@ export async function runPage(mdxPath: string, opts: RunPageOptions): Promise<Ma
 
   const useCache = opts.useCache !== false;
   const defaultTimeoutMs = opts.defaultTimeoutMs ?? 30_000;
-  const concurrency = opts.concurrency ?? Math.max(1, Math.min(8, (await import("node:os")).cpus().length));
   const cacheRoot = resolve(projectRoot, ".mdx-notebook");
 
   const lockfileContent = readLockfileContent(projectRoot);
   const nodeVersion = process.versions.node;
 
-  const outputs = await runConcurrent(collected.cells, concurrency, async (cell) => {
-    const cacheKey = await maybeCacheKey(cell, absMdx, lockfileContent, nodeVersion);
+  const outputs = await topologicalRun(collected.cells, async (cell, depsResults) => {
+    const depsHash = hashDepsResults(depsResults);
+    const cacheKey = await maybeCacheKey(cell, absMdx, lockfileContent, nodeVersion, depsHash);
     const cacheEnabled = cell.kind === "ipynb" ? false : cell.cache !== false;
     if (useCache && cacheEnabled && cacheKey) {
       const hit = await readCache(cacheRoot, cacheKey);
       if (hit) return hit;
     }
+
+    // Build MDX_NB_DEPS env var when deps are present
+    const depsEnv: Record<string, string> =
+      Object.keys(depsResults).length > 0
+        ? { MDX_NB_DEPS: JSON.stringify(depsResults) }
+        : {};
+
     const out = await dispatchCell(cell, {
       cwd: dirname(absMdx),
-      env: process.env as Record<string, string>,
+      env: { ...(process.env as Record<string, string>), ...depsEnv },
       defaultTimeoutMs
     }, (p) => readFileSync(p, "utf8"));
     if (cacheKey && cacheEnabled) {
@@ -80,7 +88,8 @@ async function maybeCacheKey(
   cell: Cell,
   mdxAbs: string,
   lockfileContent: string,
-  nodeVersion: string
+  nodeVersion: string,
+  depsHash: string
 ): Promise<string | undefined> {
   if (cell.kind === "ipynb") return undefined; // ipynb is parse-only, cheap to redo
   let sourceBytes = "";
@@ -101,7 +110,8 @@ async function maybeCacheKey(
     runnerVersion: "0.0.0",
     nodeVersion,
     lockfile: lockfileContent,
-    env: envBytes
+    env: envBytes,
+    depsHash
   });
 }
 
@@ -116,23 +126,3 @@ function readLockfileContent(root: string): string {
   return "";
 }
 
-async function runConcurrent<T, R>(
-  items: T[],
-  concurrency: number,
-  fn: (t: T) => Promise<R>
-): Promise<R[]> {
-  const out: R[] = [];
-  let i = 0;
-  const workers = Array.from(
-    { length: Math.min(concurrency, Math.max(1, items.length)) },
-    async () => {
-      while (true) {
-        const idx = i++;
-        if (idx >= items.length) return;
-        out[idx] = await fn(items[idx]!);
-      }
-    }
-  );
-  await Promise.all(workers);
-  return out;
-}

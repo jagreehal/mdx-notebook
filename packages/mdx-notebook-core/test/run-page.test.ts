@@ -63,4 +63,35 @@ describe("runPage", () => {
     await expect(runPage(join(FIX, "basic.mdx"), { rootDir: root, strict: true }))
       .rejects.toThrow(/boom/);
   });
+
+  it("re-runs downstream cell when upstream result changes (useCache:false)", async () => {
+    const root = await mkdtemp(join(tmpdir(), "mdx-rp-dep-"));
+    let upstreamResult: unknown = { v: 1 };
+    const depRunner: Runner = {
+      language: "ts",
+      version: "test-2",
+      canHandle: (c) => c.kind !== "ipynb" && c.lang === "ts",
+      run: async (c) => ({
+        cellId: c.id,
+        status: "ok",
+        durationMs: 1,
+        exitCode: 0,
+        stdout: [],
+        stderr: [],
+        result: c.id === "numbers" ? upstreamResult : undefined
+      })
+    };
+
+    clearRegistry(); registerRunner(depRunner);
+    const m1 = await runPage(join(FIX, "multi-cell.mdx"), { rootDir: root, useCache: false });
+    expect(m1.cells["numbers"]?.result).toEqual({ v: 1 });
+    expect(m1.cells["sum"]?.status).toBe("ok");
+
+    // Change upstream result and re-run without cache
+    upstreamResult = { v: 2 };
+    clearRegistry(); registerRunner(depRunner);
+    const m2 = await runPage(join(FIX, "multi-cell.mdx"), { rootDir: root, useCache: false });
+    expect(m2.cells["numbers"]?.result).toEqual({ v: 2 });
+    expect(m2.cells["sum"]?.status).toBe("ok");
+  });
 });
