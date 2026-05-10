@@ -74,3 +74,25 @@ export function parseTimeoutMs(value: string | undefined): number | undefined {
   const factor = unit === "ms" ? 1 : unit === "s" ? 1000 : 60_000;
   return n * factor;
 }
+
+const VALID_ID_RE = /^[A-Za-z0-9_:-]+$/;
+
+export function parseDependsOn(value: string | undefined): string[] | undefined {
+  if (value === undefined) return undefined;
+  const parts = value.split(",").map((s) => s.trim());
+  for (const part of parts) {
+    if (!part) {
+      throw new BuildError({
+        code: "BAD_DEPENDS_ON",
+        message: `BAD_DEPENDS_ON: dependsOn contains an empty segment (got "${value}")`
+      });
+    }
+    if (!VALID_ID_RE.test(part)) {
+      throw new BuildError({
+        code: "BAD_DEPENDS_ON",
+        message: `BAD_DEPENDS_ON: invalid cell id "${part}" in dependsOn (must match [A-Za-z0-9_:-]+)`
+      });
+    }
+  }
+  return parts;
+}

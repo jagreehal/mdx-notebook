@@ -1,7 +1,6 @@
 // packages/core/test/parse-fence.test.ts
 import { describe, it, expect } from "vitest";
-import { parseFenceInfo } from "../src/parse-fence.js";
-import { parseTimeoutMs } from "../src/parse-fence.js";
+import { parseFenceInfo, parseTimeoutMs, parseDependsOn } from "../src/parse-fence.js";
 import { BuildError } from "../src/errors.js";
 
 describe("parseFenceInfo", () => {
@@ -57,4 +56,30 @@ describe("parseTimeoutMs", () => {
   it("rejects garbage", () => expect(() => parseTimeoutMs("abc")).toThrow(BuildError));
   it("rejects zero", () => expect(() => parseTimeoutMs("0")).toThrow(BuildError));
   it("rejects negative", () => expect(() => parseTimeoutMs("-5s")).toThrow(BuildError));
+});
+
+describe("parseDependsOn", () => {
+  it("undefined → undefined", () => {
+    expect(parseDependsOn(undefined)).toBeUndefined();
+  });
+
+  it('"a" → ["a"]', () => {
+    expect(parseDependsOn("a")).toEqual(["a"]);
+  });
+
+  it('"a, b , c" → ["a","b","c"]', () => {
+    expect(parseDependsOn("a, b , c")).toEqual(["a", "b", "c"]);
+  });
+
+  it('empty string → throws BAD_DEPENDS_ON', () => {
+    expect(() => parseDependsOn("")).toThrow(/BAD_DEPENDS_ON/);
+  });
+
+  it('invalid character "a/b" → throws BAD_DEPENDS_ON', () => {
+    expect(() => parseDependsOn("a/b")).toThrow(/BAD_DEPENDS_ON/);
+  });
+
+  it('whitespace-only segment "a, , b" → throws BAD_DEPENDS_ON', () => {
+    expect(() => parseDependsOn("a, , b")).toThrow(/BAD_DEPENDS_ON/);
+  });
 });
