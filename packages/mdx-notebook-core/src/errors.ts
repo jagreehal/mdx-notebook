@@ -6,10 +6,14 @@ export type BuildErrorCode =
   | "MISSING_SRC"
   | "UNKNOWN_LANG"
   | "BAD_CELLS_SELECTOR"
+  | "BAD_CHECKPOINT"
   | "IPYNB_PARSE"
   | "BAD_DEPENDS_ON"
+  | "BAD_MATRIX"
   | "CYCLIC_DEPENDS_ON"
   | "UNKNOWN_DEP"
+  | "BAD_TIMEOUT"
+  | "STRICT_CELL_FAILURE"
   | "INTERNAL";
 
 export interface BuildErrorInit {

@@ -1,5 +1,7 @@
 export type Loc = { file: string; line: number; column: number };
 
+export type { MatrixVariant } from "./parse-fence.js";
+
 export type InlineCell = {
   kind: "inline";
   id: string;
@@ -9,6 +11,7 @@ export type InlineCell = {
   cache?: boolean;
   env?: string;
   dependsOn?: string[];
+  matrix?: import("./parse-fence.js").MatrixVariant[];
   loc: Loc;
 };
 
@@ -21,6 +24,7 @@ export type FileCell = {
   cache?: boolean;
   env?: string;
   dependsOn?: string[];
+  matrix?: import("./parse-fence.js").MatrixVariant[];
   loc: Loc;
 };
 
@@ -55,12 +59,84 @@ export type CellOutput = {
   result?: unknown;
   error?: { name: string; message: string; stack?: string };
   ipynbOutputs?: IpynbOutput[];
+  variants?: Record<string, CellOutput>; // matrix runs
 };
 
 export type Manifest = {
   pageId: string;
   cells: Record<string, CellOutput>;
   builtAt: number;
+  tutorial?: TutorialMeta;
+  checkpoints?: CheckpointResult[];
+  progress?: TutorialProgress;
+};
+
+export type TutorialMeta = {
+  lessonId?: string;
+  title?: string;
+  order?: number;
+  estimatedMinutes?: number;
+  difficulty?: "beginner" | "intermediate" | "advanced" | string;
+  audience?: string;
+  summary?: string;
+  prerequisites?: string[];
+  outcomes?: string[];
+  tags?: string[];
+  troubleshooting?: string[];
+};
+
+export type CheckpointOp =
+  | "equals"
+  | "includes"
+  | "regex"
+  | "exists"
+  | "gt"
+  | "gte"
+  | "lt"
+  | "lte";
+
+export type CheckpointSpec = {
+  id: string;
+  cellId: string;
+  path?: string;
+  op: CheckpointOp;
+  expected?: unknown;
+  required?: boolean;
+  weight?: number;
+  title?: string;
+  hint?: string;
+  loc: Loc;
+};
+
+export type CheckpointResult = {
+  id: string;
+  cellId: string;
+  passed: boolean;
+  required: boolean;
+  weight: number;
+  op: CheckpointOp;
+  path: string;
+  expected?: unknown;
+  actual?: unknown;
+  title?: string;
+  hint?: string;
+  message?: string;
+};
+
+export type TutorialProgress = {
+  requiredTotal: number;
+  requiredPassed: number;
+  optionalTotal: number;
+  optionalPassed: number;
+  weightedScore: number;
+  weightedMax: number;
+  percent: number;
+  completed: boolean;
+  prerequisites: {
+    required: string[];
+    missing: string[];
+    satisfied: boolean;
+  };
 };
 
 export interface RunCtx {

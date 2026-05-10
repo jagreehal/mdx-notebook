@@ -5,7 +5,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { runPage } from "../src/run-page.js";
 import { clearRegistry, registerRunner } from "../src/runner-registry.js";
-import type { Runner } from "../src/types.js";
+import type { Runner, RunCtx } from "../src/types.js";
 
 const fakeTs: Runner = {
   language: "ts",
@@ -93,5 +93,80 @@ describe("runPage", () => {
     const m2 = await runPage(join(FIX, "multi-cell.mdx"), { rootDir: root, useCache: false });
     expect(m2.cells["numbers"]?.result).toEqual({ v: 2 });
     expect(m2.cells["sum"]?.status).toBe("ok");
+  });
+
+  it("matrix cell: runFn receives per-variant env; manifest.cells contains variants", async () => {
+    const root = await mkdtemp(join(tmpdir(), "mdx-rp-matrix-"));
+    const capturedEnvs: Array<Record<string, string>> = [];
+    const matrixRunner: Runner = {
+      language: "ts",
+      version: "test-matrix",
+      canHandle: (c) => c.kind !== "ipynb" && c.lang === "ts",
+      run: async (c, ctx: RunCtx) => {
+        capturedEnvs.push({ ...ctx.env });
+        return {
+          cellId: c.id,
+          status: "ok",
+          durationMs: 1,
+          exitCode: 0,
+          stdout: [],
+          stderr: [],
+          result: ctx.env
+        };
+      }
+    };
+    clearRegistry(); registerRunner(matrixRunner);
+    const m = await runPage(join(FIX, "matrix.mdx"), { rootDir: root, useCache: false });
+
+    // The cell should appear in manifest
+    expect(m.cells["demo"]).toBeDefined();
+    // variants should be present with all three labels
+    const demo = m.cells["demo"]!;
+    expect(demo.variants).toBeDefined();
+    expect(Object.keys(demo.variants!).sort()).toEqual(["crash", "happy", "resume"]);
+    // The "crash" variant should have CRASH_AFTER in its env result
+    expect((demo.variants!["crash"]!.result as Record<string, string>)["CRASH_AFTER"]).toBe("2");
+    // The "resume" variant should have RESUMING in its env result
+    expect((demo.variants!["resume"]!.result as Record<string, string>)["RESUMING"]).toBe("1");
+    // The "happy" variant has no extra env keys injected
+    expect((demo.variants!["happy"]!.result as Record<string, string>)["CRASH_AFTER"]).toBeUndefined();
+    // Runner was called 3 times (once per variant)
+    expect(capturedEnvs).toHaveLength(3);
+  });
+
+  it("emits tutorial metadata, checkpoints, and progress", async () => {
+    const root = await mkdtemp(join(tmpdir(), "mdx-rp-tutorial-"));
+    const tutorialRunner: Runner = {
+      language: "ts",
+      version: "test-tutorial",
+      canHandle: (c) => c.kind !== "ipynb" && c.lang === "ts",
+      run: async (c) => ({
+        cellId: c.id,
+        status: "ok",
+        durationMs: 1,
+        exitCode: 0,
+        stdout: [{ ts: 1, stream: "stdout", text: `ran ${c.id}` }],
+        stderr: [],
+        result: c.id === "numbers" ? [1, 2, 3, 4] : c.id === "sum" ? 10 : undefined
+      })
+    };
+    clearRegistry(); registerRunner(tutorialRunner);
+    const m = await runPage(join(FIX, "tutorial-quality.mdx"), {
+      rootDir: root,
+      completedLessons: ["lesson-01"]
+    });
+
+    expect(m.tutorial?.lessonId).toBe("lesson-02");
+    expect(m.tutorial?.prerequisites).toEqual(["lesson-01"]);
+    expect(m.checkpoints?.map((c) => c.id)).toEqual(["sum-equals-10", "sum-stdout"]);
+    expect(m.checkpoints?.every((c) => c.passed)).toBe(true);
+    expect(m.progress).toMatchObject({
+      requiredTotal: 1,
+      requiredPassed: 1,
+      optionalTotal: 1,
+      optionalPassed: 1,
+      percent: 100,
+      completed: true
+    });
   });
 });

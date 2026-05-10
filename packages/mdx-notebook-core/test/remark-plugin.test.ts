@@ -13,7 +13,7 @@ const mdx = (name: string) =>
   readFileSync(join(__dirname, "fixtures", name), "utf8");
 
 function process(source: string, file: string) {
-  const collected: CellsCollected = { cells: [] };
+  const collected: CellsCollected = { cells: [], checkpoints: [] };
   const proc = unified()
     .use(remarkParse)
     .use(remarkMdx)
@@ -94,6 +94,47 @@ describe("remarkMdxNotebook", () => {
       kind: "file",
       id: "step2",
       dependsOn: ["step1", "step0"]
+    });
+  });
+
+  it("fence with matrix attr parses variants onto inline cell", () => {
+    const src = '```ts run id=demo matrix="a:,b:X=1"\nconsole.log(1);\n```\n';
+    const c = process(src, "x.mdx");
+    expect(c.cells[0]).toMatchObject({
+      kind: "inline",
+      id: "demo",
+      matrix: [
+        { label: "a", env: {} },
+        { label: "b", env: { X: "1" } }
+      ]
+    });
+  });
+
+  it("directive with matrix attr parses variants onto file cell", () => {
+    const src = ':::run{src="./step2.ts" id="step2" matrix="a:,b:X=1"}\n:::\n';
+    const c = process(src, "x.mdx");
+    expect(c.cells[0]).toMatchObject({
+      kind: "file",
+      id: "step2",
+      matrix: [
+        { label: "a", env: {} },
+        { label: "b", env: { X: "1" } }
+      ]
+    });
+  });
+
+  it("collects checkpoint directives", () => {
+    const src = ':::check{id="sum-ok" cell="sum" equals="10" path="result" required="true" weight="2"}\n:::\n';
+    const c = process(src, "x.mdx");
+    expect(c.checkpoints).toHaveLength(1);
+    expect(c.checkpoints[0]).toMatchObject({
+      id: "sum-ok",
+      cellId: "sum",
+      op: "equals",
+      expected: 10,
+      path: "result",
+      required: true,
+      weight: 2
     });
   });
 });

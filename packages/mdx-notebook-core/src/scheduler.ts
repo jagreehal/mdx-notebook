@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import { BuildError } from "./errors.js";
 import type { Cell, CellOutput } from "./types.js";
 
-export type RunFn = (cell: Cell, depsResults: Record<string, unknown>) => Promise<CellOutput>;
+export type RunFn = (cell: Cell, depsResults: Record<string, unknown>, extraEnv?: Record<string, string>) => Promise<CellOutput>;
 
 /**
  * Execute cells in topological order, respecting dependsOn.
@@ -86,6 +86,21 @@ export async function topologicalRun(cells: Cell[], runFn: RunFn): Promise<CellO
           depsResults[d] = outputs.get(d)?.result;
         }
 
+        // Matrix: run once per variant, aggregate results
+        if (cell.kind !== "ipynb" && cell.matrix && cell.matrix.length > 0) {
+          const variants: Record<string, CellOutput> = {};
+          for (const v of cell.matrix) {
+            const out = await runFn(cell, depsResults, v.env);
+            variants[v.label] = out;
+          }
+          const firstLabel = cell.matrix[0]!.label;
+          const aggregate: CellOutput = {
+            ...variants[firstLabel]!,
+            variants
+          };
+          return aggregate;
+        }
+
         return runFn(cell, depsResults);
       })
     );
@@ -140,6 +155,22 @@ function detectCycles(cells: Cell[]): void {
 export function hashDepsResults(depsResults: Record<string, unknown>): string {
   if (Object.keys(depsResults).length === 0) return "";
   return createHash("sha256")
-    .update(JSON.stringify(depsResults, Object.keys(depsResults).sort()))
+    .update(stableStringify(depsResults))
     .digest("hex");
+}
+
+function stableStringify(value: unknown): string {
+  return JSON.stringify(sortRec(value));
+}
+
+function sortRec(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(sortRec);
+  if (value && typeof value === "object") {
+    const out: Record<string, unknown> = {};
+    for (const k of Object.keys(value as Record<string, unknown>).sort()) {
+      out[k] = sortRec((value as Record<string, unknown>)[k]);
+    }
+    return out;
+  }
+  return value;
 }

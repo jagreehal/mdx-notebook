@@ -1,6 +1,6 @@
 // packages/core/test/parse-fence.test.ts
 import { describe, it, expect } from "vitest";
-import { parseFenceInfo, parseTimeoutMs, parseDependsOn } from "../src/parse-fence.js";
+import { parseFenceInfo, parseTimeoutMs, parseDependsOn, parseMatrix } from "../src/parse-fence.js";
 import { BuildError } from "../src/errors.js";
 
 describe("parseFenceInfo", () => {
@@ -56,6 +56,51 @@ describe("parseTimeoutMs", () => {
   it("rejects garbage", () => expect(() => parseTimeoutMs("abc")).toThrow(BuildError));
   it("rejects zero", () => expect(() => parseTimeoutMs("0")).toThrow(BuildError));
   it("rejects negative", () => expect(() => parseTimeoutMs("-5s")).toThrow(BuildError));
+});
+
+describe("parseMatrix", () => {
+  it("undefined → undefined", () => {
+    expect(parseMatrix(undefined)).toBeUndefined();
+  });
+
+  it("single variant with empty env", () => {
+    expect(parseMatrix("happy:")).toEqual([{ label: "happy", env: {} }]);
+  });
+
+  it("multi-variant with env vars", () => {
+    expect(parseMatrix("happy:,crash:CRASH_AFTER=2,resume:CRASH_AFTER=;RESUMING=1")).toEqual([
+      { label: "happy", env: {} },
+      { label: "crash", env: { CRASH_AFTER: "2" } },
+      { label: "resume", env: { CRASH_AFTER: "", RESUMING: "1" } }
+    ]);
+  });
+
+  it("whitespace around tokens is tolerated", () => {
+    expect(parseMatrix("  a: ,  b : X=1 ")).toEqual([
+      { label: "a", env: {} },
+      { label: "b", env: { X: "1" } }
+    ]);
+  });
+
+  it("duplicate labels are rejected", () => {
+    expect(() => parseMatrix("foo:,foo:X=1")).toThrow(/BAD_MATRIX/);
+  });
+
+  it("invalid label characters are rejected", () => {
+    expect(() => parseMatrix("bad label:")).toThrow(/BAD_MATRIX/);
+  });
+
+  it("malformed env (missing =) is rejected", () => {
+    expect(() => parseMatrix("a:NOEQUALS")).toThrow(/BAD_MATRIX/);
+  });
+
+  it("empty string (no variants after split) is rejected", () => {
+    expect(() => parseMatrix("")).toThrow(/BAD_MATRIX/);
+  });
+
+  it("variant missing label (colon at position 0) is rejected", () => {
+    expect(() => parseMatrix(":X=1")).toThrow(/BAD_MATRIX/);
+  });
 });
 
 describe("parseDependsOn", () => {

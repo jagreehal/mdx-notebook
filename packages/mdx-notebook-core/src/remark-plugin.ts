@@ -4,17 +4,19 @@ import type { Plugin } from "unified";
 import type { Root, Code } from "mdast";
 import { visit } from "unist-util-visit";
 import { BuildError } from "./errors.js";
-import { parseFenceInfo, parseTimeoutMs, parseDependsOn } from "./parse-fence.js";
+import { parseFenceInfo, parseTimeoutMs, parseDependsOn, parseMatrix } from "./parse-fence.js";
 import {
   parseRunDirectiveAttrs,
   parseIpynbDirectiveAttrs,
+  parseCheckDirectiveAttrs,
   inferLang
 } from "./parse-directive.js";
 import { parseIpynb, extractIpynbCells } from "./ipynb-parser.js";
-import type { Cell, Loc } from "./types.js";
+import type { Cell, CheckpointSpec, Loc } from "./types.js";
 
 export interface CellsCollected {
   cells: Cell[];
+  checkpoints: CheckpointSpec[];
 }
 
 export interface RemarkMdxNotebookOptions {
@@ -48,6 +50,7 @@ export const remarkMdxNotebook: Plugin<[RemarkMdxNotebookOptions], Root> = (opts
       const timeout = parseTimeoutMs(info.attrs.timeout);
       const cache = parseCacheAttr(info.attrs.cache);
       const dependsOnInline = parseDependsOn(info.attrs.dependsOn);
+      const matrixInline = parseMatrix(info.attrs.matrix);
       opts.collect.cells.push({
         kind: "inline",
         id,
@@ -57,6 +60,7 @@ export const remarkMdxNotebook: Plugin<[RemarkMdxNotebookOptions], Root> = (opts
         ...(cache !== undefined ? { cache } : {}),
         ...(info.attrs.env !== undefined ? { env: info.attrs.env } : {}),
         ...(dependsOnInline !== undefined ? { dependsOn: dependsOnInline } : {}),
+        ...(matrixInline !== undefined ? { matrix: matrixInline } : {}),
         loc
       });
     });
@@ -69,6 +73,7 @@ export const remarkMdxNotebook: Plugin<[RemarkMdxNotebookOptions], Root> = (opts
         const a = parseRunDirectiveAttrs(attrs, loc);
         assertUnique(seen, a.id, loc);
         const lang = inferLang(a.src);
+        const matrixFile = parseMatrix(attrs.matrix);
         opts.collect.cells.push({
           kind: "file",
           id: a.id,
@@ -78,6 +83,7 @@ export const remarkMdxNotebook: Plugin<[RemarkMdxNotebookOptions], Root> = (opts
           ...(a.cache !== undefined ? { cache: a.cache } : {}),
           ...(a.env !== undefined ? { env: a.env } : {}),
           ...(a.dependsOn !== undefined ? { dependsOn: a.dependsOn } : {}),
+          ...(matrixFile !== undefined ? { matrix: matrixFile } : {}),
           loc
         });
       } else if (dir.name === "ipynb") {
@@ -97,6 +103,20 @@ export const remarkMdxNotebook: Plugin<[RemarkMdxNotebookOptions], Root> = (opts
             loc
           });
         }
+      } else if (dir.name === "check") {
+        const c = parseCheckDirectiveAttrs(attrs, loc);
+        opts.collect.checkpoints.push({
+          id: c.id,
+          cellId: c.cell,
+          ...(c.path !== undefined ? { path: c.path } : {}),
+          op: c.op,
+          ...(c.expected !== undefined ? { expected: c.expected } : {}),
+          ...(c.required !== undefined ? { required: c.required } : {}),
+          ...(c.weight !== undefined ? { weight: c.weight } : {}),
+          ...(c.title !== undefined ? { title: c.title } : {}),
+          ...(c.hint !== undefined ? { hint: c.hint } : {}),
+          loc
+        });
       }
     });
   };

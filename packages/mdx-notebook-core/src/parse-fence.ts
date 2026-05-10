@@ -1,5 +1,47 @@
 import { BuildError } from "./errors.js";
 
+export interface MatrixVariant {
+  label: string;
+  env: Record<string, string>;
+}
+
+export function parseMatrix(input: string | undefined): MatrixVariant[] | undefined {
+  if (input === undefined) return undefined;
+  const variants = input.split(",").map((s) => s.trim()).filter(Boolean);
+  if (variants.length === 0) {
+    throw new BuildError({ code: "BAD_MATRIX", message: `BAD_MATRIX: matrix selector is empty` });
+  }
+  const out: MatrixVariant[] = [];
+  const seen = new Set<string>();
+  for (const v of variants) {
+    const colon = v.indexOf(":");
+    if (colon < 1) {
+      throw new BuildError({ code: "BAD_MATRIX", message: `BAD_MATRIX: variant "${v}" missing label (expected "label:env")` });
+    }
+    const label = v.slice(0, colon).trim();
+    if (!/^[A-Za-z0-9_-]+$/.test(label)) {
+      throw new BuildError({ code: "BAD_MATRIX", message: `BAD_MATRIX: invalid label "${label}" (allowed: A-Za-z0-9_-)` });
+    }
+    if (seen.has(label)) {
+      throw new BuildError({ code: "BAD_MATRIX", message: `BAD_MATRIX: duplicate variant label "${label}"` });
+    }
+    seen.add(label);
+    const envStr = v.slice(colon + 1).trim();
+    const env: Record<string, string> = {};
+    if (envStr.length > 0) {
+      for (const kv of envStr.split(";").map((s) => s.trim()).filter(Boolean)) {
+        const eq = kv.indexOf("=");
+        if (eq < 1) {
+          throw new BuildError({ code: "BAD_MATRIX", message: `BAD_MATRIX: env "${kv}" must be KEY=VAL` });
+        }
+        env[kv.slice(0, eq).trim()] = kv.slice(eq + 1);
+      }
+    }
+    out.push({ label, env });
+  }
+  return out;
+}
+
 export type FenceInfo =
   | { runnable: false; lang: string }
   | { runnable: true; lang: string; attrs: Record<string, string> };
