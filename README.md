@@ -245,6 +245,20 @@ Story-style test outputs are written to [`docs/evidence/`](./docs/evidence/) by 
 
 The starter app at [`examples/starter`](./examples/starter) is the integration dogfood. If you change `mdx-notebook-react` or `mdx-notebook-astro`, run the starter and the e2e tests before pushing.
 
+## Deploying the starter
+
+`examples/starter` is a real Astro site. Deploy it to get a live demo of mdx-notebook.
+
+```bash
+# Vercel
+npx vercel --cwd examples/starter
+
+# Netlify
+npx netlify deploy --build --dir=examples/starter/dist
+```
+
+Set `ANTHROPIC_API_KEY` in the deployment environment to enable real Claude calls in tutorial 02 (the page falls back to mocked output when the key is unset). See [`DEPLOYING.md`](./DEPLOYING.md) for full instructions including Cloudflare Pages and sub-path deploys.
+
 ---
 
 ## Optional features
