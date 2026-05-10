@@ -8,6 +8,7 @@ export type InlineCell = {
   timeout?: number;
   cache?: boolean;
   env?: string;
+  dependsOn?: string[];
   loc: Loc;
 };
 
@@ -19,6 +20,7 @@ export type FileCell = {
   timeout?: number;
   cache?: boolean;
   env?: string;
+  dependsOn?: string[];
   loc: Loc;
 };
 

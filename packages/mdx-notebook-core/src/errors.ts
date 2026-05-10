@@ -7,6 +7,9 @@ export type BuildErrorCode =
   | "UNKNOWN_LANG"
   | "BAD_CELLS_SELECTOR"
   | "IPYNB_PARSE"
+  | "BAD_DEPENDS_ON"
+  | "CYCLIC_DEPENDS_ON"
+  | "UNKNOWN_DEP"
   | "INTERNAL";
 
 export interface BuildErrorInit {
