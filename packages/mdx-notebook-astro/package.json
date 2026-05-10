@@ -10,7 +10,7 @@
   },
   "files": ["dist"],
   "scripts": {
-    "build": "tsdown",
+    "build": "bash -lc 'set -o pipefail; tsdown 2>&1 | { grep -Ev \"Invalid input options \\(1 issue found\\)|For the \\\"define\\\"\\. +Invalid key|\\[PLUGIN_TIMINGS\\]|Your build spent significant time in plugin|See https://rolldown.rs/options/checks#plugintimings|rolldown-plugin-dts:generate|rolldown-plugin-dts:resolver\" || true; }; exit ${PIPESTATUS[0]}'",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
@@ -18,12 +18,29 @@
   },
   "dependencies": {
     "mdx-notebook-core": "workspace:*",
-    "mdx-notebook-runner-ts": "workspace:*"
+    "mdx-notebook-runner-ts": "workspace:*",
+    "mdast-util-directive": "^3.0.0",
+    "hastscript": "^9.0.0",
+    "unist-util-visit": "^5.0.0",
+    "remark-directive": "^4.0.0"
   },
   "peerDependencies": {
-    "astro": "^4.0.0 || ^5.0.0 || ^6.0.0"
+    "astro": "^4.0.0 || ^5.0.0 || ^6.0.0",
+    "astro-expressive-code": "^0.35.0 || ^0.40.0",
+    "@expressive-code/plugin-collapsible-sections": "^0.35.0 || ^0.40.0",
+    "@expressive-code/plugin-line-numbers": "^0.35.0 || ^0.40.0"
   },
   "peerDependenciesMeta": {
-    "astro": { "optional": true }
+    "astro": { "optional": true },
+    "astro-expressive-code": { "optional": true },
+    "@expressive-code/plugin-collapsible-sections": { "optional": true },
+    "@expressive-code/plugin-line-numbers": { "optional": true }
+  },
+  "devDependencies": {
+    "@types/mdast": "^4.0.0",
+    "@types/node": "^20.19.0",
+    "@types/unist": "^3.0.0",
+    "unified": "^11.0.0",
+    "remark-parse": "^11.0.0"
   }
 }

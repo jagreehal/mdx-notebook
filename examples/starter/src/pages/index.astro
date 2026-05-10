@@ -1,6 +1,7 @@
 ---
 import { runNotebook } from "mdx-notebook-astro";
 import { Page } from "../components/Page.tsx";
+import { Content as CalloutsDemo } from "../content/callouts-demo.mdx";
 
 const manifest = await runNotebook("./src/content/tutorial.mdx");
 ---
@@ -10,16 +11,36 @@ const manifest = await runNotebook("./src/content/tutorial.mdx");
     <meta name="viewport" content="width=device-width" />
     <title>mdx-notebook starter</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
-    <style>{`
+    <style>
       body { font-family: system-ui, -apple-system, sans-serif; max-width: 760px; margin: 2rem auto; padding: 0 1rem; line-height: 1.6; color: #1a1a1a; }
       h1 { font-size: 2rem; margin-bottom: 0.5rem; }
       h2 { font-size: 1.25rem; margin-top: 2rem; }
       section { margin-bottom: 1.5rem; }
-    `}</style>
+
+      .mdx-nb-callout {
+        border-left: 4px solid #999;
+        padding: 0.6rem 0.9rem;
+        margin: 0.75rem 0;
+        background: #f6f7f9;
+        border-radius: 0 6px 6px 0;
+      }
+      .mdx-nb-callout-title { font-weight: 600; margin-bottom: 0.25rem; }
+      .mdx-nb-callout-tip { border-left-color: #2da44e; background: #f1faf3; }
+      .mdx-nb-callout-tip .mdx-nb-callout-title { color: #1a7f37; }
+      .mdx-nb-callout-info { border-left-color: #1f6feb; background: #f0f6ff; }
+      .mdx-nb-callout-info .mdx-nb-callout-title { color: #1f6feb; }
+      .mdx-nb-callout-warn { border-left-color: #d4a72c; background: #fff8c5; }
+      .mdx-nb-callout-warn .mdx-nb-callout-title { color: #9a6700; }
+      .mdx-nb-callout-danger { border-left-color: #cf222e; background: #ffebe9; }
+      .mdx-nb-callout-danger .mdx-nb-callout-title { color: #cf222e; }
+      .mdx-nb-callout-success { border-left-color: #2da44e; background: #dafbe1; }
+      .mdx-nb-callout-success .mdx-nb-callout-title { color: #1a7f37; }
+    </style>
   </head>
   <body>
     <h1>mdx-notebook starter</h1>
     <p>Cells executed at build. Open <code>src/content/tutorial.mdx</code> to author.</p>
+    <CalloutsDemo />
     <Page manifest={manifest} client:load />
   </body>
 </html>

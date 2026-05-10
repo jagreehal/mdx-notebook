@@ -247,6 +247,40 @@ The starter app at [`examples/starter`](./examples/starter) is the integration d
 
 ---
 
+## Optional features
+
+### Callouts and shiki highlighting
+
+```js
+// astro.config.mjs
+import expressiveCode from "astro-expressive-code";
+import { pluginCollapsibleSections } from "@expressive-code/plugin-collapsible-sections";
+import { pluginLineNumbers } from "@expressive-code/plugin-line-numbers";
+import mdx from "@astrojs/mdx";
+import mdxNotebook from "mdx-notebook-astro";
+
+export default defineConfig({
+  integrations: [
+    // expressiveCode must be listed before mdx()
+    expressiveCode({ themes: ["light-plus", "dark-plus"], plugins: [pluginCollapsibleSections(), pluginLineNumbers()] }),
+    mdx(),
+    mdxNotebook({ callouts: true })
+  ]
+});
+```
+
+`callouts: true` adds `:::tip`, `:::info`, `:::warn`, `:::danger`, `:::success` directive blocks to your MDX/Markdown. The plugin auto-registers `remark-directive` as a prerequisite so directive syntax is parsed correctly.
+
+For shiki-powered code highlighting, add `astro-expressive-code` directly to your integrations array **before** `mdx()` (required by `astro-expressive-code`). Install the packages first:
+
+```bash
+pnpm add astro-expressive-code @expressive-code/plugin-collapsible-sections @expressive-code/plugin-line-numbers
+```
+
+`mdxNotebook` also exposes a `codeHighlight: true` shorthand option that registers `astro-expressive-code` via `addIntegration` — suitable for plain `.md` files. For `.mdx` files, add `expressiveCode` directly as shown above.
+
+---
+
 ## Contributing
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md).

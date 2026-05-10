@@ -44,4 +44,11 @@ test("Starter renders all 3 cell kinds and JsonEditor mutates state", async ({ p
 
   story.then("the NotebookCell composite renders code + output together");
   await expect(page.getByText(/NotebookCell composite/)).toBeVisible();
+
+  story.then("the callouts demo renders with the tip class");
+  await expect(page.locator(".mdx-nb-callout-tip").first()).toBeVisible();
+
+  story.then("Expressive Code applies shiki highlighting");
+  // Expressive Code emits .expressive-code wrapper; verify presence
+  await expect(page.locator(".expressive-code").first()).toBeVisible();
 });
