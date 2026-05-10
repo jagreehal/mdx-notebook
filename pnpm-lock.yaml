@@ -179,6 +179,9 @@ importers:
       jsdom:
         specifier: ^26.0.0
         version: 26.1.0
+      mdx-notebook-runner-ts:
+        specifier: workspace:*
+        version: link:../mdx-notebook-runner-ts
       react:
         specifier: ^19.0.0
         version: 19.2.6
@@ -207,6 +210,16 @@ importers:
       react:
         specifier: ^19.0.0
         version: 19.2.6
+
+  packages/mdx-notebook-runner-bash:
+    dependencies:
+      mdx-notebook-core:
+        specifier: workspace:*
+        version: link:../mdx-notebook-core
+    devDependencies:
+      '@types/node':
+        specifier: ^20.0.0
+        version: 20.19.40
 
   packages/mdx-notebook-runner-ts:
     dependencies:
