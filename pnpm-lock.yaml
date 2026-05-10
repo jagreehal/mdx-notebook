@@ -67,6 +67,12 @@ importers:
         specifier: ^5.5.0
         version: 5.9.3
 
+  packages/create-mdx-notebook:
+    devDependencies:
+      '@types/node':
+        specifier: ^20.0.0
+        version: 20.19.40
+
   packages/mdx-notebook-astro:
     dependencies:
       astro:
