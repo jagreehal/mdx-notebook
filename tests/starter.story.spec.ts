@@ -10,7 +10,7 @@ test("Starter renders all 3 cell kinds and JsonEditor mutates state", async ({ p
   await page.waitForLoadState("networkidle");
 
   story.then("the inline cell stdout is visible");
-  await expect(page.getByText(/Hello from inline TypeScript/)).toBeVisible();
+  await expect(page.getByText(/Hello from inline TypeScript/).first()).toBeVisible();
 
   story.then("the agent trace shows captured steps");
   // "Step 1" appears as a <summary> heading in the AgentTrace component
@@ -38,4 +38,10 @@ test("Starter renders all 3 cell kinds and JsonEditor mutates state", async ({ p
   // The ResultJSON re-renders with the new value; it appears in the AgentTrace final-result code
   // block AND in the ResultJSON below the editor. Use first() to avoid strict-mode error.
   await expect(page.getByText(/Edited live/).first()).toBeVisible();
+
+  story.then("the Math section renders KaTeX output");
+  await expect(page.locator(".katex").first()).toBeVisible();
+
+  story.then("the NotebookCell composite renders code + output together");
+  await expect(page.getByText(/NotebookCell composite/)).toBeVisible();
 });

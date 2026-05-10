@@ -8,3 +8,5 @@ export { injectStyles } from "./styles.js";
 export { JsonEditor, type JsonEditorProps } from "./json-editor.js";
 export { AgentTrace } from "./agent-trace.js";
 export { IpynbOutputs } from "./ipynb-outputs.js";
+export { Math, type MathProps } from "./math.js";
+export { NotebookCell, type NotebookCellProps } from "./notebook-cell.js";
