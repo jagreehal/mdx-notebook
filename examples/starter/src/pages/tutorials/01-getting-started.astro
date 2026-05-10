@@ -1,0 +1,18 @@
+---
+import Layout from "../../components/Layout.astro";
+import TutorialPage from "../../components/TutorialPage.tsx";
+import { runNotebook } from "mdx-notebook-astro";
+
+const manifest = await runNotebook("./src/content/tutorials/01-getting-started.mdx");
+---
+<Layout title="Getting started — mdx-notebook">
+  <h1>Getting started</h1>
+  <p>Three cell forms — inline code, file references, and Jupyter notebooks.</p>
+
+  <TutorialPage manifest={manifest} cells={["hello", "trace-1", "nb-1:0"]} client:load />
+
+  <nav class="lesson-nav">
+    <a href="/">← Welcome</a>
+    <a href="/tutorials/02-agents">Next: AI agents →</a>
+  </nav>
+</Layout>

@@ -1,0 +1,31 @@
+# Getting started
+
+Cells in mdx-notebook come in three shapes. Each captures different output.
+
+## Inline code fence
+
+```ts run id=hello
+const greeting = "Hello from inline TypeScript";
+console.log(greeting);
+console.log("Multiple stdout lines are captured");
+
+export default async function () {
+  return { greeting, items: [1, 2, 3] };
+}
+```
+
+The cell above runs at build time. Stdout was captured. The default-export return value became the cell's `result`.
+
+## File reference
+
+This cell points at a real `.ts` file in the repo. The build executes it and captures the output.
+
+:::run{src="../../../scripts/agent.ts" id="trace-1"}
+:::
+
+## Jupyter notebook import
+
+Saved Python output rendered statically. No Python ever runs at build time — just the captured outputs from the original `.ipynb`.
+
+:::ipynb{src="../../../notebooks/intro.ipynb" id="nb-1" cells="0"}
+:::

@@ -1,0 +1,18 @@
+---
+import Layout from "../../components/Layout.astro";
+import { runNotebook } from "mdx-notebook-astro";
+import AgentsPage from "../../components/AgentsPage.tsx";
+
+const manifest = await runNotebook("./src/content/tutorials/02-agents.mdx");
+---
+<Layout title="AI agents with tool use — mdx-notebook">
+  <h1>AI agents with tool use</h1>
+  <p>From a single executable cell, capture the entire agent flow — steps, tool calls, and final response.</p>
+
+  <AgentsPage manifest={manifest} client:load />
+
+  <nav class="lesson-nav">
+    <a href="/tutorials/01-getting-started">← Getting started</a>
+    <a href="/tutorials/03-streaming">Next: Streaming →</a>
+  </nav>
+</Layout>

@@ -1,0 +1,8 @@
+# AI agents with tool use
+
+When an AI agent calls tools to answer a question, you get a tree of steps: user prompt, tool calls with input/output, and a final response. mdx-notebook captures all of it from a single executable cell.
+
+:::run{src="../../scripts/tool-loop.ts" id="agent-loop"}
+:::
+
+The cell above ran a simulated agent loop. Stdout shows step markers; the default-export result contains structured `messages` and `toolCalls` arrays — perfect inputs for `<MessageThread>` and `<ToolCallTimeline>`.

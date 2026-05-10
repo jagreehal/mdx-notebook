@@ -1,0 +1,57 @@
+---
+import Sidebar from "./Sidebar.astro";
+const { title = "mdx-notebook starter" } = Astro.props;
+---
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>{title}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
+    <style>
+      :root {
+        --sidebar-w: 240px;
+        --max-w: 760px;
+      }
+      body { margin: 0; font-family: system-ui, -apple-system, sans-serif; line-height: 1.6; color: #1a1a1a; }
+      .layout { display: grid; grid-template-columns: var(--sidebar-w) 1fr; min-height: 100vh; }
+      .sidebar { background: #f6f7f9; border-right: 1px solid #e1e4e8; padding: 1rem; overflow-y: auto; position: sticky; top: 0; height: 100vh; }
+      .main { padding: 2rem; max-width: var(--max-w); margin: 0 auto; width: 100%; }
+      h1 { font-size: 2rem; margin: 0 0 1rem; }
+      h2 { font-size: 1.25rem; margin-top: 2rem; }
+      header.top { padding: 0.75rem 1rem; border-bottom: 1px solid #e1e4e8; background: #fff; position: sticky; top: 0; z-index: 5; }
+      header.top .brand { font-weight: 700; font-size: 1.05rem; }
+      .lesson-nav { display: flex; justify-content: space-between; margin-top: 3rem; padding-top: 1rem; border-top: 1px solid #e1e4e8; }
+      .lesson-nav a { color: #1f6feb; text-decoration: none; }
+      .mdx-nb-callout {
+        border-left: 4px solid #999;
+        padding: 0.6rem 0.9rem;
+        margin: 0.75rem 0;
+        background: #f6f7f9;
+        border-radius: 0 6px 6px 0;
+      }
+      .mdx-nb-callout-title { font-weight: 600; margin-bottom: 0.25rem; }
+      .mdx-nb-callout-tip { border-left-color: #2da44e; background: #f1faf3; }
+      .mdx-nb-callout-tip .mdx-nb-callout-title { color: #1a7f37; }
+      .mdx-nb-callout-info { border-left-color: #1f6feb; background: #f0f6ff; }
+      .mdx-nb-callout-info .mdx-nb-callout-title { color: #1f6feb; }
+      .mdx-nb-callout-warn { border-left-color: #d4a72c; background: #fff8c5; }
+      .mdx-nb-callout-warn .mdx-nb-callout-title { color: #9a6700; }
+      .mdx-nb-callout-danger { border-left-color: #cf222e; background: #ffebe9; }
+      .mdx-nb-callout-danger .mdx-nb-callout-title { color: #cf222e; }
+      .mdx-nb-callout-success { border-left-color: #2da44e; background: #dafbe1; }
+      .mdx-nb-callout-success .mdx-nb-callout-title { color: #1a7f37; }
+      @media (max-width: 720px) {
+        .layout { grid-template-columns: 1fr; }
+        .sidebar { position: static; height: auto; border-right: none; border-bottom: 1px solid #e1e4e8; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top"><span class="brand">mdx-notebook</span></header>
+    <div class="layout">
+      <aside class="sidebar"><Sidebar /></aside>
+      <main class="main"><slot /></main>
+    </div>
+  </body>
+</html>

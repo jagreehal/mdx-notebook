@@ -1,0 +1,17 @@
+---
+import Layout from "../../components/Layout.astro";
+import { runNotebook } from "mdx-notebook-astro";
+import ComparingPage from "../../components/ComparingPage.tsx";
+
+const manifest = await runNotebook("./src/content/tutorials/04-comparing-models.mdx");
+---
+<Layout title="Comparing models — mdx-notebook">
+  <h1>Comparing models</h1>
+
+  <ComparingPage manifest={manifest} client:load />
+
+  <nav class="lesson-nav">
+    <a href="/tutorials/03-streaming">← Streaming</a>
+    <a href="/">Done — back to overview</a>
+  </nav>
+</Layout>

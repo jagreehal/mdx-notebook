@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { story } from "executable-stories-playwright";
 
-test("Starter renders all 3 cell kinds and JsonEditor mutates state", async ({ page }, testInfo) => {
+test("Landing page lists all 4 tutorials", async ({ page }, testInfo) => {
   story.init(testInfo, { tags: ["starter", "e2e"] });
   story.given("the starter Astro app is running on localhost:4321");
 
@@ -9,46 +9,63 @@ test("Starter renders all 3 cell kinds and JsonEditor mutates state", async ({ p
   await page.goto("/");
   await page.waitForLoadState("networkidle");
 
-  story.then("the inline cell stdout is visible");
-  await expect(page.getByText(/Hello from inline TypeScript/).first()).toBeVisible();
+  story.then("the landing page headline is visible");
+  await expect(page.getByText(/Runnable docs that don't go stale/)).toBeVisible();
 
-  story.then("the agent trace shows captured steps");
-  // "Step 1" appears as a <summary> heading in the AgentTrace component
-  await expect(page.locator("summary", { hasText: "Step 1" }).first()).toBeVisible();
-  // "Pack a light jacket" appears in the AgentTrace "Final result" details; use first() to avoid strict-mode error
-  await expect(page.getByText(/Pack a light jacket/).first()).toBeVisible();
+  story.then("all 4 tutorial links are present");
+  await expect(page.getByRole("link", { name: /Getting started/ }).first()).toBeVisible();
+  await expect(page.getByRole("link", { name: /AI agents with tool use/ }).first()).toBeVisible();
+  await expect(page.getByRole("link", { name: /Streaming token output/ }).first()).toBeVisible();
+  await expect(page.getByRole("link", { name: /Comparing models/ }).first()).toBeVisible();
 
-  story.then("the Jupyter notebook output is visible");
-  await expect(page.getByText(/Hello from Jupyter!/)).toBeVisible();
+  story.then("the sidebar shows tutorial navigation");
+  await expect(page.getByRole("navigation")).toBeVisible();
+});
 
-  story.then("the JsonEditor textarea is present and contains the cell result as JSON");
-  // Open the <details> wrapping the JsonEditor
-  await page.locator("summary", { hasText: "Edit the result live" }).click();
-  const editor = page.getByLabel(/Edit JSON for trace/);
-  await expect(editor).toBeVisible();
-  await expect(editor).toHaveValue(/finalResponse/);
+test("Tutorial 02: agents page renders MessageThread and ToolCallTimeline", async ({ page }, testInfo) => {
+  story.init(testInfo, { tags: ["starter", "e2e"] });
+  story.given("the starter Astro app is running on localhost:4321");
 
-  story.when("the editor's JSON is replaced with a new value");
-  // Playwright fill() updates the DOM value and fires input/change events.
-  // React 19 handles 'change' events for controlled textarea onChange.
-  await editor.fill(JSON.stringify({ finalResponse: "Edited live", steps: 99 }, null, 2));
-  await page.waitForTimeout(300);
+  story.when("the agents tutorial page is loaded");
+  await page.goto("/tutorials/02-agents");
+  await page.waitForLoadState("networkidle");
 
-  story.then("the displayed result reflects the edit");
-  // The ResultJSON re-renders with the new value; it appears in the AgentTrace final-result code
-  // block AND in the ResultJSON below the editor. Use first() to avoid strict-mode error.
-  await expect(page.getByText(/Edited live/).first()).toBeVisible();
+  story.then("the page heading is visible");
+  await expect(page.getByRole("heading", { name: /AI agents with tool use/ })).toBeVisible();
 
-  story.then("the Math section renders KaTeX output");
-  await expect(page.locator(".katex").first()).toBeVisible();
+  story.then("the agent stdout steps are rendered");
+  await expect(page.getByText(/Step 1/).first()).toBeVisible();
 
-  story.then("the NotebookCell composite renders code + output together");
-  await expect(page.getByText(/NotebookCell composite/)).toBeVisible();
+  story.then("the MessageThread shows conversation roles");
+  await expect(page.getByText(/user/).first()).toBeVisible();
+  await expect(page.getByText(/assistant/).first()).toBeVisible();
 
-  story.then("the callouts demo renders with the tip class");
-  await expect(page.locator(".mdx-nb-callout-tip").first()).toBeVisible();
+  story.then("the ToolCallTimeline lists the getWeather call");
+  await expect(page.getByText(/getWeather/).first()).toBeVisible();
 
-  story.then("Expressive Code applies shiki highlighting");
-  // Expressive Code emits .expressive-code wrapper; verify presence
-  await expect(page.locator(".expressive-code").first()).toBeVisible();
+  story.then("the lesson nav links are present");
+  await expect(page.getByRole("link", { name: /Getting started/ }).first()).toBeVisible();
+  await expect(page.getByRole("link", { name: /Streaming/ }).first()).toBeVisible();
+});
+
+test("Tutorial 03: streaming page renders StreamingStdout", async ({ page }, testInfo) => {
+  story.init(testInfo, { tags: ["starter", "e2e"] });
+  story.given("the starter Astro app is running on localhost:4321");
+
+  story.when("the streaming tutorial page is loaded");
+  await page.goto("/tutorials/03-streaming");
+  await page.waitForLoadState("networkidle");
+
+  story.then("the page heading is visible");
+  await expect(page.getByRole("heading", { name: /Streaming token output/ })).toBeVisible();
+
+  story.then("the streaming output container is present");
+  await expect(page.locator(".mdx-nb-streaming").first()).toBeVisible();
+
+  story.then("the static stdout comparison is also present");
+  await expect(page.getByText(/Static rendering/).first()).toBeVisible();
+
+  story.then("the lesson nav links are present");
+  await expect(page.getByRole("link", { name: /AI agents/ }).first()).toBeVisible();
+  await expect(page.getByRole("link", { name: /Comparing models/ }).first()).toBeVisible();
 });

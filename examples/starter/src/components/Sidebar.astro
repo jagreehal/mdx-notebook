@@ -1,0 +1,25 @@
+---
+const tutorials = [
+  { slug: "01-getting-started", title: "1. Getting started" },
+  { slug: "02-agents",          title: "2. AI agents with tool use" },
+  { slug: "03-streaming",       title: "3. Streaming token output" },
+  { slug: "04-comparing-models", title: "4. Comparing models" }
+];
+const current = Astro.url.pathname;
+---
+<nav>
+  <h3 style="margin-top: 0; font-size: 0.85rem; text-transform: uppercase; color: #666;">Tutorials</h3>
+  <ul style="list-style: none; padding: 0; margin: 0;">
+    <li>
+      <a href="/" style={`display: block; padding: 0.4rem 0; color: ${current === "/" ? "#1f6feb" : "#1a1a1a"}; text-decoration: none; font-weight: ${current === "/" ? "600" : "normal"};`}>Welcome</a>
+    </li>
+    {tutorials.map((t) => (
+      <li>
+        <a
+          href={`/tutorials/${t.slug}`}
+          style={`display: block; padding: 0.4rem 0; color: ${current.includes(t.slug) ? "#1f6feb" : "#1a1a1a"}; text-decoration: none; font-weight: ${current.includes(t.slug) ? "600" : "normal"};`}
+        >{t.title}</a>
+      </li>
+    ))}
+  </ul>
+</nav>
