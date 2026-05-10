@@ -1,0 +1,11 @@
+node_modules
+dist
+.turbo
+.mdx-notebook
+coverage
+*.tsbuildinfo
+.DS_Store
+docs/evidence
+.executable-stories
+test-results
+playwright-report

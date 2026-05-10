@@ -1,0 +1,22 @@
+{
+  "name": "create-mdx-notebook",
+  "version": "0.0.0",
+  "description": "Scaffold a new mdx-notebook tutorial site",
+  "type": "module",
+  "main": "./dist/index.js",
+  "bin": {
+    "create-mdx-notebook": "./dist/cli.js"
+  },
+  "files": ["dist", "template"],
+  "scripts": {
+    "build": "tsdown && chmod +x dist/cli.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist .turbo coverage template",
+    "prebuild": "node ./scripts/sync-template.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0"
+  }
+}
