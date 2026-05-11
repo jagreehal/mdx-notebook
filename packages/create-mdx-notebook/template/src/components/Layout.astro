@@ -1,12 +1,27 @@
 ---
 import Sidebar from "./Sidebar.astro";
-const { title = "mdx-notebook" } = Astro.props;
+const {
+  title = "mdx-notebook",
+  description = "Runnable docs that don't go stale. Write MDX. Code runs at build time. Outputs are typed and bound to React components."
+} = Astro.props;
+const fullTitle = title === "mdx-notebook" ? "mdx-notebook — runnable docs" : `${title} — mdx-notebook`;
+const canonical = `https://mdx-notebook-demo.vercel.app${Astro.url.pathname}`;
 ---
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
-    <title>{title}</title>
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content="mdx-notebook" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

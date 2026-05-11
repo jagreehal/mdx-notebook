@@ -1,0 +1,22 @@
+---
+import Layout from "../../components/Layout.astro";
+import BuildAgentPage from "../../components/BuildAgentPage.tsx";
+import { runNotebook } from "mdx-notebook-astro";
+import { getAdjacent } from "../../tutorials.config.ts";
+
+const manifest = await runNotebook("./src/content/tutorials/06-build-an-ai-agent.mdx");
+const { prev, next } = getAdjacent("06-build-an-ai-agent");
+---
+<Layout title="Build an AI agent with tool use using Vercel AI SDK and Gemini" description="Step-by-step tutorial: build an AI agent with the Vercel AI SDK and Google Gemini 2.5 Flash. Captures every tool call at build time so your docs reflect what your code actually does.">
+  <h1>Build an AI agent with tool use using Vercel AI SDK and Gemini</h1>
+  <p style="font-size: 1.05rem; color: var(--fg-muted, #555); max-width: 60ch;">
+    Step-by-step guide to building an agent with tool use using the Vercel AI SDK and Google Gemini 2.5 Flash. Every tool call is captured at build time and visualized inline.
+  </p>
+
+  <BuildAgentPage manifest={manifest} client:load />
+
+  <nav class="lesson-nav">
+    {prev && <a href={`/tutorials/${prev.slug}`}>← {prev.title}</a>}
+    {next && <a href={`/tutorials/${next.slug}`}>{next.title} →</a>}
+  </nav>
+</Layout>

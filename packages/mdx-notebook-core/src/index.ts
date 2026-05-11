@@ -5,6 +5,7 @@ export { remarkMdxNotebook, type RemarkMdxNotebookOptions, type CellsCollected }
 export { parseIpynb, extractIpynbCells } from "./ipynb-parser.js";
 export { registerRunner, getRunner, listRunners, clearRegistry } from "./runner-registry.js";
 export { runPage, type RunPageOptions } from "./run-page.js";
+export { extractEnvRefs, envSnapshot } from "./extract-env-refs.js";
 export { computePageId } from "./page-id.js";
 export { buildManifest, writeManifest, manifestPath } from "./manifest.js";
 export { computeCacheKey, readCache, writeCache, type CacheKeyInputs } from "./cache.js";

@@ -68,6 +68,15 @@ export const lessons: LessonMeta[] = [
     durationMin: 8,
     level: "intermediate",
     prereqs: ["02-agents"]
+  },
+  {
+    slug: "06-build-an-ai-agent",
+    title: "Build an AI agent with tool use",
+    blurb: "Step-by-step guide to building an agent with the Vercel AI SDK and Google Gemini, with every tool call captured and visualized.",
+    group: "AI",
+    durationMin: 15,
+    level: "intermediate",
+    prereqs: ["02-agents"]
   }
 ];
 

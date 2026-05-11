@@ -12,6 +12,7 @@ import { computeCacheKey, readCache, writeCache } from "./cache.js";
 import { buildManifest, writeManifest } from "./manifest.js";
 import { topologicalRun, hashDepsResults } from "./scheduler.js";
 import { computeProgress, evaluateCheckpoints, parseTutorialMetaFromSource } from "./curriculum.js";
+import { extractEnvRefs, envSnapshot } from "./extract-env-refs.js";
 import type { Cell, Manifest } from "./types.js";
 import { BuildError } from "./errors.js";
 
@@ -126,13 +127,18 @@ async function maybeCacheKey(
   const extraEnvBytes = extraEnv && Object.keys(extraEnv).length > 0
     ? JSON.stringify(Object.fromEntries(Object.entries(extraEnv).sort()))
     : "";
+  // Include values of env vars REFERENCED by the cell source. When the user sets
+  // GOOGLE_API_KEY after a previous build cached "mocked output", a rebuild will
+  // see the changed value and invalidate the cache automatically.
+  const referencedNames = extractEnvRefs(sourceBytes);
+  const referencedEnvSnapshot = envSnapshot(referencedNames, process.env as Record<string, string | undefined>);
   return computeCacheKey({
     sourceBytes,
     runner: cell.lang,
     runnerVersion: "0.0.0",
     nodeVersion,
     lockfile: lockfileContent,
-    env: envBytes + extraEnvBytes,
+    env: envBytes + extraEnvBytes + referencedEnvSnapshot,
     depsHash
   });
 }
